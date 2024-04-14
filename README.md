@@ -1,5 +1,5 @@
 # mppsolar_dashboards
-Dashboards, rules, and associated files for use with mpp-solar by John Blance using a Prometheus or Victoria Metrics tdb backend.
+Grafana dashboards, Prometheus rules, and associated files for use with mpp-solar by John Blance using a Prometheus or Victoria Metrics tdb backend.
 
 
 
