@@ -1,0 +1,3578 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_PROMETHEUS",
+      "label": "Prometheus",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "prometheus",
+      "pluginName": "Prometheus"
+    },
+    {
+      "name": "DS_PROMETHEUS-FOR-LIBRARY-PANEL",
+      "label": "Prometheus",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "prometheus",
+      "pluginName": "Prometheus",
+      "usage": {
+        "libraryPanels": [
+          {
+            "name": "Battery Charge Current Guage",
+            "uid": "d2494e32-5cdd-469a-8c4a-1875dfee68cc"
+          }
+        ]
+      }
+    }
+  ],
+  "__elements": {
+    "t4IP69C4z": {
+      "name": "Node System",
+      "uid": "t4IP69C4z",
+      "kind": 1,
+      "model": {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "description": "",
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [],
+            "max": 100,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "dark-blue",
+                  "value": null
+                },
+                {
+                  "color": "dark-green",
+                  "value": 10
+                },
+                {
+                  "color": "dark-orange",
+                  "value": 50
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "options": {
+          "displayMode": "gradient",
+          "maxVizHeight": 300,
+          "minVizHeight": 10,
+          "minVizWidth": 0,
+          "namePlacement": "auto",
+          "orientation": "horizontal",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showUnfilled": true,
+          "sizing": "auto",
+          "valueMode": "color"
+        },
+        "pluginVersion": "10.2.2",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "(1 - (node_memory_MemAvailable_bytes{instance=\"$node\",job=\"$job\"} / (node_memory_MemTotal_bytes{instance=\"$node\",job=\"$job\"})))* 100",
+            "instant": true,
+            "interval": "",
+            "legendFormat": "Memory",
+            "range": false,
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "100 - ((node_filesystem_avail_bytes{instance=\"$node\",job=\"$job\",mountpoint=\"/\",fstype=~\"ext4|xfs\"} * 100) / node_filesystem_size_bytes{instance=\"$node\",job=\"$job\",mountpoint=\"/\",fstype=~\"ext4|xfs\"})",
+            "instant": true,
+            "interval": "",
+            "legendFormat": "Disk",
+            "range": false,
+            "refId": "B"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "(1 - (node_memory_SwapFree_bytes{instance=\"$node\",job=\"$job\"} / node_memory_SwapTotal_bytes{instance=\"$node\",job=\"$job\"})) * 100",
+            "instant": true,
+            "interval": "",
+            "legendFormat": "Swap",
+            "range": false,
+            "refId": "C"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "(node_load1{instance=\"$node\",job=\"$job\"}) * 40",
+            "hide": false,
+            "instant": true,
+            "legendFormat": "System load",
+            "range": false,
+            "refId": "D"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "node_hwmon_temp_celsius{instance=\"$node\",job=\"$job\"}",
+            "hide": false,
+            "instant": true,
+            "legendFormat": "{{chip}} Celsius",
+            "range": false,
+            "refId": "E"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "((node_filesystem_size_bytes{instance=\"$node\",job=\"$job\",mountpoint=\"/\"} - node_filesystem_avail_bytes{instance=\"$node\",job=\"$job\",mountpoint=\"/\"}) / node_filesystem_size_bytes{instance=\"$node\",job=\"$job\",mountpoint=\"/\"}) * 100",
+            "hide": false,
+            "instant": true,
+            "legendFormat": "Drive Use {{mountpoint}}",
+            "range": false,
+            "refId": "F"
+          }
+        ],
+        "title": "Node System",
+        "type": "bargauge"
+      }
+    },
+    "bf358669-67f3-4e55-9212-610b15106bd2": {
+      "name": "Mode Table",
+      "uid": "bf358669-67f3-4e55-9212-610b15106bd2",
+      "kind": 1,
+      "model": {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "description": "LV6548 - POP\n\nPOP         Set Device Output Source Priority -- examples: POP00 (set utility first), POP01 (set solar first), POP02 (set SBU priority)",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "custom": {
+              "align": "center",
+              "cellOptions": {
+                "type": "color-background"
+              },
+              "inspect": false,
+              "minWidth": 50
+            },
+            "mappings": [
+              {
+                "options": {
+                  "match": "null",
+                  "result": {
+                    "index": 0,
+                    "text": "N/A"
+                  }
+                },
+                "type": "special"
+              },
+              {
+                "options": {
+                  "pattern": "FaultMode",
+                  "result": {
+                    "color": "dark-red",
+                    "index": 1,
+                    "text": "Fault Mode"
+                  }
+                },
+                "type": "regex"
+              },
+              {
+                "options": {
+                  "pattern": "Line.*.Mode",
+                  "result": {
+                    "color": "yellow",
+                    "index": 2,
+                    "text": "Line Mode"
+                  }
+                },
+                "type": "regex"
+              },
+              {
+                "options": {
+                  "pattern": "Battery.*.Mode",
+                  "result": {
+                    "color": "dark-green",
+                    "index": 3,
+                    "text": "Battery Mode"
+                  }
+                },
+                "type": "regex"
+              },
+              {
+                "options": {
+                  "pattern": "Solar.*.first",
+                  "result": {
+                    "color": "dark-green",
+                    "index": 4
+                  }
+                },
+                "type": "regex"
+              }
+            ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "transparent",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 1
+                }
+              ]
+            },
+            "unit": "string"
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "myStr 1"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "Output Source Priority"
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "myStr 2"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "Charge Source Priority"
+                }
+              ]
+            }
+          ]
+        },
+        "links": [],
+        "maxDataPoints": 100,
+        "options": {
+          "cellHeight": "sm",
+          "footer": {
+            "countRows": false,
+            "fields": [],
+            "reducer": [
+              "sum"
+            ],
+            "show": false
+          },
+          "frameIndex": 0,
+          "showHeader": true
+        },
+        "pluginVersion": "10.2.2",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "mpp_solar_work_mode{instance=\"$node\",job=\"$job\"}",
+            "format": "table",
+            "hide": false,
+            "instant": true,
+            "interval": "",
+            "legendFormat": "Work Mode",
+            "range": false,
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "mpp_solar_charger_source_priority{instance=\"$node\",job=\"$job\"}",
+            "format": "table",
+            "hide": false,
+            "instant": true,
+            "legendFormat": "__auto",
+            "range": false,
+            "refId": "B"
+          }
+        ],
+        "title": "Work Mode",
+        "transformations": [
+          {
+            "id": "joinByField",
+            "options": {
+              "byField": "inverter",
+              "mode": "inner"
+            }
+          },
+          {
+            "id": "filterFieldsByName",
+            "options": {
+              "include": {
+                "names": [
+                  "inverter",
+                  "myStr 1",
+                  "myStr 2"
+                ]
+              }
+            }
+          }
+        ],
+        "transparent": true,
+        "type": "table"
+      }
+    },
+    "e8d80694-fa3f-44d4-b2c5-2cda7e85a054": {
+      "name": "Status",
+      "uid": "e8d80694-fa3f-44d4-b2c5-2cda7e85a054",
+      "kind": 1,
+      "model": {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "description": "",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "custom": {
+              "align": "center",
+              "cellOptions": {
+                "type": "color-background"
+              },
+              "filterable": false,
+              "inspect": false,
+              "minWidth": 50
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "transparent",
+                  "value": null
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 0
+                },
+                {
+                  "color": "dark-green",
+                  "value": 1
+                }
+              ]
+            },
+            "unit": "bool_yes_no"
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Value #A"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "Load on"
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Value #B"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "AC Charging"
+                },
+                {
+                  "id": "thresholds",
+                  "value": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": null
+                      },
+                      {
+                        "color": "semi-dark-orange",
+                        "value": 1
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Value #C"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "AC Utility Lost"
+                },
+                {
+                  "id": "thresholds",
+                  "value": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": null
+                      },
+                      {
+                        "color": "dark-red",
+                        "value": 1
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Value #D"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "Solar Charging"
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Value #E"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "SCC OK"
+                }
+              ]
+            }
+          ]
+        },
+        "links": [],
+        "maxDataPoints": 100,
+        "options": {
+          "cellHeight": "sm",
+          "footer": {
+            "countRows": false,
+            "fields": [],
+            "reducer": [
+              "sum"
+            ],
+            "show": false
+          },
+          "frameIndex": 0,
+          "showHeader": true,
+          "sortBy": []
+        },
+        "pluginVersion": "10.2.2",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "mpp_solar_is_load_on{instance=\"$node\",job=\"$job\",cmd!=\"QPIGS\"}",
+            "format": "table",
+            "hide": false,
+            "instant": true,
+            "interval": "",
+            "legendFormat": "Work Mode",
+            "range": false,
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "mpp_solar_is_ac_charging{instance=\"$node\",job=\"$job\"}",
+            "format": "table",
+            "hide": false,
+            "instant": true,
+            "legendFormat": "__auto",
+            "range": false,
+            "refId": "B"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "expr": "mpp_solar_is_line_lost{instance=\"$node\",job=\"$job\"}",
+            "format": "table",
+            "hide": false,
+            "instant": true,
+            "legendFormat": "__auto",
+            "range": true,
+            "refId": "C"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "expr": "mpp_solar_is_scc_charging{instance=\"$node\",job=\"$job\"}",
+            "format": "table",
+            "hide": false,
+            "instant": true,
+            "legendFormat": "__auto",
+            "range": true,
+            "refId": "D"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "expr": "mpp_solar_is_scc_ok{instance=\"$node\",job=\"$job\"}",
+            "format": "table",
+            "hide": false,
+            "instant": true,
+            "legendFormat": "__auto",
+            "range": true,
+            "refId": "E"
+          }
+        ],
+        "title": "Status",
+        "transformations": [
+          {
+            "id": "joinByField",
+            "options": {
+              "byField": "inverter",
+              "mode": "inner"
+            }
+          },
+          {
+            "id": "filterFieldsByName",
+            "options": {
+              "byVariable": false,
+              "include": {
+                "names": [
+                  "inverter",
+                  "Value #A",
+                  "Value #B",
+                  "Value #C",
+                  "Value #D",
+                  "Value #E"
+                ]
+              }
+            }
+          }
+        ],
+        "transparent": true,
+        "type": "table"
+      }
+    },
+    "f19c9c64-1130-4d31-bac1-0f75a8b29765": {
+      "name": "Fault Mode Table",
+      "uid": "f19c9c64-1130-4d31-bac1-0f75a8b29765",
+      "kind": 1,
+      "model": {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "description": "",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "custom": {
+              "align": "center",
+              "cellOptions": {
+                "type": "color-background"
+              },
+              "filterable": false,
+              "inspect": false,
+              "minWidth": 50
+            },
+            "mappings": [
+              {
+                "options": {
+                  "match": "null+nan",
+                  "result": {
+                    "color": "red",
+                    "index": 0,
+                    "text": "N/A"
+                  }
+                },
+                "type": "special"
+              },
+              {
+                "options": {
+                  "pattern": "Overtemperature",
+                  "result": {
+                    "color": "dark-red",
+                    "index": 1,
+                    "text": "Over Temperature"
+                  }
+                },
+                "type": "regex"
+              },
+              {
+                "options": {
+                  "pattern": "No fault",
+                  "result": {
+                    "color": "dark-green",
+                    "index": 2,
+                    "text": "No Fault"
+                  }
+                },
+                "type": "regex"
+              }
+            ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "transparent",
+                  "value": null
+                },
+                {
+                  "color": "dark-red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "none"
+          },
+          "overrides": []
+        },
+        "links": [],
+        "maxDataPoints": 100,
+        "options": {
+          "cellHeight": "sm",
+          "footer": {
+            "countRows": false,
+            "enablePagination": false,
+            "fields": "",
+            "reducer": [
+              "sum"
+            ],
+            "show": false
+          },
+          "showHeader": false
+        },
+        "pluginVersion": "10.2.2",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "mpp_solar_fault_code{instance=\"$node\",job=\"$job\"}",
+            "format": "table",
+            "instant": true,
+            "interval": "",
+            "legendFormat": "Fault Code",
+            "range": false,
+            "refId": "A"
+          }
+        ],
+        "title": "Fault Mode",
+        "transformations": [
+          {
+            "id": "filterFieldsByName",
+            "options": {
+              "include": {
+                "names": [
+                  "inverter",
+                  "myStr"
+                ]
+              }
+            }
+          }
+        ],
+        "type": "table"
+      }
+    },
+    "kk4MJF3Vz": {
+      "name": "Grid Voltage",
+      "uid": "kk4MJF3Vz",
+      "kind": 1,
+      "model": {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "description": "As detected by each inverter",
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [],
+            "max": 130,
+            "min": 90,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "light-yellow",
+                  "value": null
+                },
+                {
+                  "color": "#6ED0E0",
+                  "value": 90
+                },
+                {
+                  "color": "green",
+                  "value": 110
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 125
+                },
+                {
+                  "color": "red",
+                  "value": 130
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "options": {
+          "minVizHeight": 75,
+          "minVizWidth": 75,
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true
+        },
+        "pluginVersion": "10.2.2",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "mpp_solar_ac_input_voltage{instance=\"$node\",job=\"$job\"}",
+            "instant": true,
+            "interval": "",
+            "legendFormat": "{{inverter}} Grid Volts",
+            "range": false,
+            "refId": "A"
+          }
+        ],
+        "title": "Grid Voltage",
+        "type": "gauge"
+      }
+    },
+    "opkBtjCVz": {
+      "name": "AC Power Load %",
+      "uid": "opkBtjCVz",
+      "kind": 1,
+      "model": {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "description": " AC Load %",
+        "fieldConfig": {
+          "defaults": {
+            "decimals": 1,
+            "mappings": [],
+            "max": 100,
+            "min": 0,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "blue",
+                  "value": null
+                },
+                {
+                  "color": "dark-green",
+                  "value": 25
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 50
+                },
+                {
+                  "color": "dark-orange",
+                  "value": 75
+                },
+                {
+                  "color": "red",
+                  "value": 100
+                }
+              ]
+            },
+            "unit": "percent"
+          },
+          "overrides": []
+        },
+        "options": {
+          "minVizHeight": 75,
+          "minVizWidth": 75,
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true
+        },
+        "pluginVersion": "10.2.2",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "expr": "mpp_solar_load_percentage{instance=\"$node\",job=\"$job\"}",
+            "instant": true,
+            "interval": "",
+            "legendFormat": "{{inverter}}",
+            "refId": "A"
+          }
+        ],
+        "title": "AC Power Load ",
+        "type": "gauge"
+      }
+    },
+    "22wKxKq4z": {
+      "name": "Inverter heat_sink temperature",
+      "uid": "22wKxKq4z",
+      "kind": 1,
+      "model": {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "description": "Internal heatsink temperature of each inverter",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "max": 100,
+            "min": -10,
+            "thresholds": {
+              "mode": "percentage",
+              "steps": [
+                {
+                  "color": "blue",
+                  "value": null
+                },
+                {
+                  "color": "green",
+                  "value": 0
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 70
+                },
+                {
+                  "color": "red",
+                  "value": 90
+                }
+              ]
+            },
+            "unit": "celsius"
+          },
+          "overrides": []
+        },
+        "options": {
+          "displayMode": "gradient",
+          "minVizHeight": 10,
+          "minVizWidth": 0,
+          "namePlacement": "auto",
+          "orientation": "horizontal",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showUnfilled": true,
+          "valueMode": "color"
+        },
+        "pluginVersion": "10.2.2",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "mpp_solar_inverter_heat_sink_temperature{instance=\"$node\",job=\"$job\"}",
+            "instant": true,
+            "legendFormat": "{{inverter}}",
+            "range": false,
+            "refId": "A"
+          }
+        ],
+        "title": "Inverter heat_sink temperature",
+        "type": "bargauge"
+      }
+    },
+    "e605ba72-1950-4ea2-b4f8-bbdc42ed3d67": {
+      "name": "Array Power by Inverter Guage",
+      "uid": "e605ba72-1950-4ea2-b4f8-bbdc42ed3d67",
+      "kind": 1,
+      "model": {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "description": "Array power by Inverter",
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [],
+            "max": 8000,
+            "min": 90,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "super-light-blue",
+                  "value": null
+                },
+                {
+                  "color": "#6ED0E0",
+                  "value": 90
+                },
+                {
+                  "color": "green",
+                  "value": 110
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 6000
+                },
+                {
+                  "color": "red",
+                  "value": 7733
+                }
+              ]
+            },
+            "unit": "watt"
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byRegexp",
+                "options": "Total"
+              },
+              "properties": [
+                {
+                  "id": "max",
+                  "value": 1600
+                },
+                {
+                  "id": "color",
+                  "value": {
+                    "mode": "continuous-GrYlRd"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "options": {
+          "minVizHeight": 75,
+          "minVizWidth": 75,
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "sizing": "auto"
+        },
+        "pluginVersion": "10.2.2",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "PBFA97CFB590B2093"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "sum by (inverter)({ __name__=~\"mpp_solar_.+_charging_power\", instance=\"$node\", job=\"$job\" })",
+            "hide": false,
+            "instant": true,
+            "interval": "",
+            "legendFormat": "__auto",
+            "range": false,
+            "rawQuery": false,
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "PBFA97CFB590B2093"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "sum({ __name__=~\"mpp_solar_.+_charging_power\", instance=\"$node\", job=\"$job\" })",
+            "hide": false,
+            "instant": true,
+            "interval": "",
+            "legendFormat": "Total",
+            "range": false,
+            "rawQuery": false,
+            "refId": "B"
+          }
+        ],
+        "title": "Array Power by Inverter",
+        "type": "gauge"
+      }
+    },
+    "d2494e32-5cdd-469a-8c4a-1875dfee68cc": {
+      "name": "Battery Charge Current Guage",
+      "uid": "d2494e32-5cdd-469a-8c4a-1875dfee68cc",
+      "kind": 1,
+      "model": {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS-FOR-LIBRARY-PANEL}"
+        },
+        "description": "",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "custom": {
+              "neutral": 0
+            },
+            "mappings": [],
+            "max": 80,
+            "min": -80,
+            "noValue": "N/A",
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "dark-red",
+                  "value": null
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 0
+                },
+                {
+                  "color": "dark-green",
+                  "value": 1
+                }
+              ]
+            },
+            "unit": "amp"
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byRegexp",
+                "options": "Total"
+              },
+              "properties": [
+                {
+                  "id": "min",
+                  "value": -240
+                },
+                {
+                  "id": "max",
+                  "value": 240
+                }
+              ]
+            }
+          ]
+        },
+        "libraryPanel": {
+          "name": "Battery Charge Current Guage",
+          "uid": "d2494e32-5cdd-469a-8c4a-1875dfee68cc"
+        },
+        "options": {
+          "minVizHeight": 75,
+          "minVizWidth": 75,
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": true,
+          "showThresholdMarkers": true,
+          "sizing": "auto"
+        },
+        "pluginVersion": "10.2.2",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "PBFA97CFB590B2093"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "mpp_solar_battery_charging_current{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS\"} - mpp_solar_battery_discharge_current{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS\"}",
+            "hide": false,
+            "instant": true,
+            "legendFormat": "{{inverter}}",
+            "range": false,
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "PBFA97CFB590B2093"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "sum(mpp_solar_battery_charging_current{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS\"} - mpp_solar_battery_discharge_current{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS\"})",
+            "instant": true,
+            "legendFormat": "Total",
+            "range": false,
+            "refId": "B"
+          }
+        ],
+        "title": "Battery Charge Current",
+        "type": "gauge"
+      }
+    },
+    "cfQYAK34z": {
+      "name": "AC Power Watts",
+      "uid": "cfQYAK34z",
+      "kind": 1,
+      "model": {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "description": "AC load wattage on inverters",
+        "fieldConfig": {
+          "defaults": {
+            "decimals": 1,
+            "mappings": [],
+            "max": 6600,
+            "min": 0,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "blue",
+                  "value": null
+                },
+                {
+                  "color": "dark-green",
+                  "value": 1000
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 5000
+                },
+                {
+                  "color": "orange",
+                  "value": 6400
+                },
+                {
+                  "color": "red",
+                  "value": 6500
+                }
+              ]
+            },
+            "unit": "watt"
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "Total"
+              },
+              "properties": [
+                {
+                  "id": "mappings",
+                  "value": []
+                },
+                {
+                  "id": "max",
+                  "value": 13200
+                },
+                {
+                  "id": "thresholds",
+                  "value": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": null
+                      },
+                      {
+                        "color": "#EAB839",
+                        "value": 11000
+                      },
+                      {
+                        "color": "dark-orange",
+                        "value": 12000
+                      },
+                      {
+                        "color": "red",
+                        "value": 13000
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "options": {
+          "minVizHeight": 75,
+          "minVizWidth": 75,
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "sizing": "auto"
+        },
+        "pluginVersion": "10.2.2",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "mpp_solar_ac_output_active_power{instance=\"$node\",job=\"$job\",cmd!=\"QPIGS\"}",
+            "instant": true,
+            "interval": "",
+            "legendFormat": "{{inverter}} AC Watts",
+            "range": false,
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "sum(mpp_solar_ac_output_active_power{instance=\"$node\",job=\"$job\",cmd!=\"QPIGS\"})",
+            "instant": true,
+            "interval": "",
+            "legendFormat": "Total",
+            "range": false,
+            "refId": "B"
+          }
+        ],
+        "title": "AC Power Watts",
+        "type": "gauge"
+      }
+    },
+    "SCFytFq4k": {
+      "name": "Array Wattage",
+      "uid": "SCFytFq4k",
+      "kind": 1,
+      "model": {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "description": "",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "max": 4010,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "light-blue",
+                  "value": null
+                },
+                {
+                  "color": "green",
+                  "value": 100
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 3800
+                },
+                {
+                  "color": "red",
+                  "value": 4000
+                }
+              ]
+            },
+            "unit": "watt"
+          },
+          "overrides": []
+        },
+        "options": {
+          "displayMode": "gradient",
+          "minVizHeight": 10,
+          "minVizWidth": 0,
+          "namePlacement": "auto",
+          "orientation": "horizontal",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showUnfilled": true,
+          "valueMode": "color"
+        },
+        "pluginVersion": "10.2.2",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "mpp_solar_pv1_input_current{instance=\"$node\",job=\"$job\",cmd!=\"QPIGS\"} * mpp_solar_pv1_input_voltage{instance=\"$node\",job=\"$job\",cmd!=\"QPIGS\"}",
+            "instant": true,
+            "legendFormat": "{{inverter}} PV1",
+            "range": false,
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "mpp_solar_pv2_input_current{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS2\"} * mpp_solar_pv2_input_voltage{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS2\"}",
+            "hide": false,
+            "instant": true,
+            "legendFormat": "{{inverter}}  PV2",
+            "range": false,
+            "refId": "B"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "expr": "mpp_solar_pv3_input_current{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS2\"} * mpp_solar_pv3_input_voltage{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS2\"}",
+            "hide": false,
+            "instant": false,
+            "legendFormat": "{{inverter}} PV3",
+            "range": true,
+            "refId": "C"
+          }
+        ],
+        "title": "Array Wattage",
+        "type": "bargauge"
+      }
+    },
+    "ZIfYWCC4z": {
+      "name": "Battery Voltage",
+      "uid": "ZIfYWCC4z",
+      "kind": 1,
+      "model": {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "description": "Battery voltage",
+        "fieldConfig": {
+          "defaults": {
+            "decimals": 1,
+            "mappings": [],
+            "max": 60,
+            "min": 48,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "dark-red",
+                  "value": null
+                },
+                {
+                  "color": "dark-green",
+                  "value": 50
+                },
+                {
+                  "color": "dark-yellow",
+                  "value": 54
+                },
+                {
+                  "color": "red",
+                  "value": 58
+                }
+              ]
+            },
+            "unit": "volt"
+          },
+          "overrides": []
+        },
+        "options": {
+          "minVizHeight": 75,
+          "minVizWidth": 75,
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "sizing": "auto",
+          "text": {}
+        },
+        "pluginVersion": "10.2.2",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "mpp_solar_battery_voltage{instance=\"$node\",job=\"$job\",cmd!=\"QPIGS\"}",
+            "instant": true,
+            "interval": "",
+            "legendFormat": "{{inverter}}",
+            "range": false,
+            "refId": "A"
+          }
+        ],
+        "title": "Battery Voltage ",
+        "type": "gauge"
+      }
+    },
+    "PRG6bFq4k": {
+      "name": "Inverter AC Watts",
+      "uid": "PRG6bFq4k",
+      "kind": 1,
+      "model": {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "description": "Inverters AC Wattage output",
+        "fieldConfig": {
+          "defaults": {
+            "links": []
+          },
+          "overrides": []
+        },
+        "fill": 1,
+        "fillGradient": 4,
+        "hiddenSeries": false,
+        "legend": {
+          "alignAsTable": true,
+          "avg": true,
+          "current": true,
+          "max": true,
+          "min": true,
+          "show": true,
+          "total": false,
+          "values": true
+        },
+        "lines": true,
+        "linewidth": 1,
+        "nullPointMode": "null",
+        "options": {
+          "alertThreshold": true
+        },
+        "percentage": false,
+        "pluginVersion": "10.2.2",
+        "pointradius": 2,
+        "points": false,
+        "renderer": "flot",
+        "seriesOverrides": [
+          {
+            "$$hashKey": "object:1010",
+            "alias": "/Yesterday/",
+            "dashLength": 1,
+            "dashes": true,
+            "fill": 0,
+            "fillGradient": 0
+          }
+        ],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "expr": "mpp_solar_ac_output_active_power{instance=\"$node\",job=\"$job\",cmd!=\"QPIGS\"}",
+            "interval": "",
+            "legendFormat": "{{inverter}} AC Watts",
+            "range": true,
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "expr": "mpp_solar_ac_output_active_power{instance=\"$node\",job=\"$job\",cmd!=\"QPIGS\"} offset 24h",
+            "hide": false,
+            "interval": "",
+            "legendFormat": "{{inverter}} AC Watts Yesterday",
+            "range": true,
+            "refId": "B"
+          }
+        ],
+        "thresholds": [],
+        "timeFrom": null,
+        "timeRegions": [],
+        "timeShift": null,
+        "title": "Inverter AC Watts",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "type": "graph",
+        "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "$$hashKey": "object:332",
+            "decimals": 1,
+            "format": "watt",
+            "logBase": 1,
+            "show": true
+          },
+          {
+            "$$hashKey": "object:333",
+            "format": "short",
+            "logBase": 1,
+            "show": false
+          }
+        ],
+        "yaxis": {
+          "align": false
+        }
+      }
+    },
+    "VOHd2jjVz": {
+      "name": "Battery Voltage graph",
+      "uid": "VOHd2jjVz",
+      "kind": 1,
+      "model": {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "description": "volts",
+        "fieldConfig": {
+          "defaults": {
+            "links": []
+          },
+          "overrides": []
+        },
+        "fill": 1,
+        "fillGradient": 4,
+        "hiddenSeries": false,
+        "legend": {
+          "alignAsTable": true,
+          "avg": true,
+          "current": true,
+          "max": true,
+          "min": true,
+          "show": true,
+          "total": false,
+          "values": true
+        },
+        "lines": true,
+        "linewidth": 1,
+        "nullPointMode": "null",
+        "options": {
+          "alertThreshold": true
+        },
+        "percentage": false,
+        "pluginVersion": "10.2.2",
+        "pointradius": 2,
+        "points": false,
+        "renderer": "flot",
+        "seriesOverrides": [
+          {
+            "$$hashKey": "object:1253",
+            "alias": "/ Yesterday/",
+            "dashLength": 2,
+            "dashes": true,
+            "fill": 0,
+            "fillGradient": 0
+          }
+        ],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "expr": "mpp_solar_battery_voltage{instance=\"$node\",job=\"$job\",cmd!=\"QPIGS\"}",
+            "interval": "",
+            "legendFormat": "{{inverter}} Battery Voltage",
+            "range": true,
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "expr": "mpp_solar_battery_voltage{instance=\"$node\",job=\"$job\",cmd!=\"QPIGS\"} offset 24h",
+            "hide": false,
+            "interval": "",
+            "legendFormat": "{{inverter}} Battery Voltage Yesterday",
+            "range": true,
+            "refId": "B"
+          }
+        ],
+        "thresholds": [],
+        "timeFrom": null,
+        "timeRegions": [],
+        "timeShift": null,
+        "title": "Battery Voltage",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "type": "graph",
+        "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "$$hashKey": "object:194",
+            "decimals": null,
+            "format": "volt",
+            "logBase": 1,
+            "show": true
+          },
+          {
+            "$$hashKey": "object:195",
+            "format": "short",
+            "logBase": 1,
+            "show": true
+          }
+        ],
+        "yaxis": {
+          "align": false
+        }
+      }
+    },
+    "ruaxAK3Vk": {
+      "name": "MPPT PV Charging Watts",
+      "uid": "ruaxAK3Vk",
+      "kind": 1,
+      "model": {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "description": "Depends on QPIGS (PV1) and QPIGS2 (PV2-PV3) output. After MPPT.",
+        "fieldConfig": {
+          "defaults": {
+            "unit": "watt"
+          },
+          "overrides": []
+        },
+        "fill": 1,
+        "fillGradient": 0,
+        "hiddenSeries": false,
+        "legend": {
+          "alignAsTable": true,
+          "avg": true,
+          "current": true,
+          "hideZero": false,
+          "max": true,
+          "min": true,
+          "rightSide": false,
+          "show": true,
+          "total": false,
+          "values": true
+        },
+        "lines": true,
+        "linewidth": 1,
+        "nullPointMode": "null",
+        "options": {
+          "alertThreshold": true
+        },
+        "percentage": false,
+        "pluginVersion": "10.2.2",
+        "pointradius": 2,
+        "points": false,
+        "renderer": "flot",
+        "seriesOverrides": [
+          {
+            "$$hashKey": "object:125",
+            "alias": "/Yesterday*/",
+            "dashLength": 1,
+            "dashes": true,
+            "fill": 0,
+            "fillGradient": 0,
+            "hiddenSeries": true
+          },
+          {
+            "$$hashKey": "object:253",
+            "alias": "/48 hours*/",
+            "dashLength": 2,
+            "dashes": true,
+            "fill": 0,
+            "fillGradient": 0,
+            "hiddenSeries": true
+          }
+        ],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "disableTextWrap": false,
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "{ __name__=~\"mpp_solar_.+_charging_power\", instance=\"$node\", job=\"$job\" }",
+            "fullMetaSearch": false,
+            "hide": false,
+            "includeNullMetadata": true,
+            "instant": false,
+            "interval": "",
+            "legendFormat": "{{ inverter }} - {{ __name__ }}",
+            "range": true,
+            "refId": "A",
+            "useBackend": true
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "expr": "sum({__name__=~\"mpp_solar_.+_charging_power\",instance=\"$node\",job=\"$job\"})",
+            "hide": false,
+            "instant": false,
+            "legendFormat": "Total",
+            "range": true,
+            "refId": "B"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "expr": "sum({__name__=~\"mpp_solar_.+_charging_power\",instance=\"$node\",job=\"$job\"} offset 24h)",
+            "hide": false,
+            "legendFormat": "Yesterday Total",
+            "range": true,
+            "refId": "D"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "expr": "sum({__name__=~\"mpp_solar_.+_charging_power\",instance=\"$node\",job=\"$job\"} offset 48h)",
+            "hide": false,
+            "instant": false,
+            "legendFormat": "48 hours Total",
+            "range": true,
+            "refId": "E"
+          }
+        ],
+        "thresholds": [],
+        "timeFrom": null,
+        "timeRegions": [],
+        "timeShift": null,
+        "title": "PV Charging Watts",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "transformations": [
+          {
+            "id": "renameByRegex",
+            "options": {
+              "regex": "/mpp_solar_([\\S+]+.)_charging_power/",
+              "renamePattern": "$1"
+            }
+          }
+        ],
+        "type": "graph",
+        "xaxis": {
+          "buckets": null,
+          "mode": "time",
+          "name": null,
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "$$hashKey": "object:166",
+            "format": "watt",
+            "label": null,
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": true
+          },
+          {
+            "$$hashKey": "object:167",
+            "format": "short",
+            "label": null,
+            "logBase": 1,
+            "max": null,
+            "min": null,
+            "show": false
+          }
+        ],
+        "yaxis": {
+          "align": false,
+          "alignLevel": null
+        }
+      }
+    }
+  },
+  "__requires": [
+    {
+      "type": "panel",
+      "id": "bargauge",
+      "name": "Bar gauge",
+      "version": ""
+    },
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "10.2.2"
+    },
+    {
+      "type": "panel",
+      "id": "graph",
+      "name": "Graph (old)",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "prometheus",
+      "name": "Prometheus",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "text",
+      "name": "Text",
+      "version": ""
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [
+    {
+      "asDropdown": false,
+      "icon": "dashboard",
+      "includeVars": false,
+      "keepTime": false,
+      "tags": [],
+      "targetBlank": true,
+      "title": "Dashboards",
+      "tooltip": "Grafana dashboards on github for mpp-solar",
+      "type": "link",
+      "url": "https://github.com/cordelster/mppsolar_dashboards/"
+    },
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": false,
+      "keepTime": false,
+      "tags": [],
+      "targetBlank": true,
+      "title": "mpp-solar",
+      "tooltip": "mpp-solar github page",
+      "type": "link",
+      "url": "https://github.com/jblance/mpp-solar"
+    }
+  ],
+  "liveNow": false,
+  "panels": [
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 45,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "gridPos": {
+            "h": 22,
+            "w": 24,
+            "x": 0,
+            "y": 1
+          },
+          "id": 38,
+          "options": {
+            "code": {
+              "language": "plaintext",
+              "showLineNumbers": false,
+              "showMiniMap": false
+            },
+            "content": "# MPP_Solar\nThis Dashboard takes avantage of using prom output from mpp_solar with command output from QPGS and QPIGS.\nThis output can be directed to a text file while building the file, then moved to node_exporter folder as a prom file.\n\nDesigned for Rich Solar 6548 and should work for MPP LV6548 and the like. Should also work with other inverters though thresholds should be adjusted for each case based on the models abilities.\n\nAdjust your serial ports as needed. \n\n`Example configurations:`\n```\n# cat /etc/mppsolar/mpp_qpgs.conf\n[SETUP]\npause=5\n\n[Inverter_2]\nport=/dev/ttyUSB2\nprotocol=PI30max\ncommand=QPGS2\ntag=QPGS2\noutputs=prom\ndev=SCC2\n\n[Inverter_1]\nport=/dev/ttyUSB0\nprotocol=PI30max\ncommand=QPGS1\ntag=QPGS1\noutputs=prom\ndev=SCC1\n```\n\n\n```\n # cat /etc/mppsolar/mpp_qpigs.conf\n # This output required for Inverter heatsink temp, and PV1 charge wattage.\n[SETUP]\npause=5\n\n[Inverter_2]\nport=/dev/ttyUSB2\nprotocol=PI30max\ncommand=QPIGS\noutputs=prom\ndev=SCC2\n\n[Inverter_1]\nport=/dev/ttyUSB0\nprotocol=PI30max\ncommand=QPIGS\noutputs=prom\ndev=SCC1\n```\n```\n# cat /etc/mppsolar/mpp_qpigs2.conf\n### This config for inverters with more than one PV input, to retrive PV2 Charge Wattage output.\n### Thoogh not a requirement with this dashboard.\n[SETUP]\npause=5\n\n[Inverter_2]\nport=/dev/ttyUSB2\nprotocol=PI30max\ncommand=QPIGS2\noutputs=prom\ndev=SCC2\n\n[Inverter_1]\nport=/dev/ttyUSB0\nprotocol=PI30max\ncommand=QPIGS2\noutputs=prom\ndev=SCC1\n```\nExecutable in /usr/local/bin/\n```\n# cat /usr/local/bin/mpp-get-data.sh\n#!/bin/ash\ndataFile=\"mppsolar\"\ndataDir=\"/var/lib/node-exporter/mppsolar/\"\n\ncheckpath -d \"$dataDir\" -m 755 -o node_exporter:node_exporter\n\nwhile : ; do\n\n        `/usr/bin/mpp-solar -C /etc/mppsolar/mpp_qpgs.conf > ${dataDir}${dataFile}.$$` && \\\n        `/usr/bin/mpp-solar -C /etc/mppsolar/mpp_qpigs.conf >> ${dataDir}${dataFile}.$$` && \\\n        `/usr/bin/mpp-solar -C /etc/mppsolar/mpp_qpigs2.conf >> ${dataDir}${dataFile}.$$` && \\\n        mv ${dataDir}${dataFile}.$$ ${dataDir}${dataFile}.prom\n        sleep 5\ndone\n```\n\nCreate a SysV or systemd startup for the executable.\n\nFor markdown syntax help: [commonmark.org/help](https://commonmark.org/help/)",
+            "mode": "markdown"
+          },
+          "pluginVersion": "10.3.3",
+          "title": "Solar Config",
+          "type": "text"
+        }
+      ],
+      "title": "About configuration",
+      "type": "row"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 1
+      },
+      "id": 50,
+      "panels": [],
+      "title": "General Status ",
+      "type": "row"
+    },
+    {
+      "gridPos": {
+        "h": 5,
+        "w": 4,
+        "x": 0,
+        "y": 2
+      },
+      "id": 8,
+      "libraryPanel": {
+        "uid": "t4IP69C4z",
+        "name": "Node System"
+      }
+    },
+    {
+      "gridPos": {
+        "h": 5,
+        "w": 9,
+        "x": 4,
+        "y": 2
+      },
+      "id": 67,
+      "libraryPanel": {
+        "uid": "bf358669-67f3-4e55-9212-610b15106bd2",
+        "name": "Mode Table"
+      }
+    },
+    {
+      "gridPos": {
+        "h": 5,
+        "w": 11,
+        "x": 13,
+        "y": 2
+      },
+      "id": 68,
+      "libraryPanel": {
+        "uid": "e8d80694-fa3f-44d4-b2c5-2cda7e85a054",
+        "name": "Status"
+      }
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "description": "SOC",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-blue",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 50
+              },
+              {
+                "color": "semi-dark-orange",
+                "value": 75
+              },
+              {
+                "color": "dark-green",
+                "value": 100
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 5,
+        "x": 0,
+        "y": 7
+      },
+      "id": 66,
+      "options": {
+        "displayMode": "gradient",
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "valueMode": "color"
+      },
+      "pluginVersion": "10.2.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "mpp_solar_battery_capacity{instance=\"$node\",job=\"$job\",cmd!=\"QPIGS\"}",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{inverter}}",
+          "range": false,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "mpp_solar_battery_capacity{instance=\"$node\",job=\"$job\",cmd!=\"QPIGS\"} offset 24h",
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{inverter}} Yesterday",
+          "range": false,
+          "refId": "B"
+        }
+      ],
+      "title": "SCC Battery Capacity",
+      "type": "bargauge"
+    },
+    {
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 5,
+        "y": 7
+      },
+      "id": 6,
+      "libraryPanel": {
+        "uid": "f19c9c64-1130-4d31-bac1-0f75a8b29765",
+        "name": "Fault Mode Table"
+      }
+    },
+    {
+      "gridPos": {
+        "h": 4,
+        "w": 7,
+        "x": 11,
+        "y": 7
+      },
+      "id": 42,
+      "libraryPanel": {
+        "uid": "kk4MJF3Vz",
+        "name": "Grid Voltage"
+      }
+    },
+    {
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 7
+      },
+      "id": 24,
+      "libraryPanel": {
+        "uid": "opkBtjCVz",
+        "name": "AC Power Load %"
+      }
+    },
+    {
+      "gridPos": {
+        "h": 5,
+        "w": 5,
+        "x": 0,
+        "y": 11
+      },
+      "id": 48,
+      "libraryPanel": {
+        "uid": "22wKxKq4z",
+        "name": "Inverter heat_sink temperature"
+      }
+    },
+    {
+      "gridPos": {
+        "h": 5,
+        "w": 7,
+        "x": 5,
+        "y": 11
+      },
+      "id": 69,
+      "libraryPanel": {
+        "uid": "e605ba72-1950-4ea2-b4f8-bbdc42ed3d67",
+        "name": "Array Power by Inverter Guage"
+      }
+    },
+    {
+      "gridPos": {
+        "h": 12,
+        "w": 6,
+        "x": 12,
+        "y": 11
+      },
+      "id": 63,
+      "libraryPanel": {
+        "uid": "d2494e32-5cdd-469a-8c4a-1875dfee68cc",
+        "name": "Battery Charge Current Guage"
+      }
+    },
+    {
+      "gridPos": {
+        "h": 12,
+        "w": 6,
+        "x": 18,
+        "y": 11
+      },
+      "id": 40,
+      "libraryPanel": {
+        "uid": "cfQYAK34z",
+        "name": "AC Power Watts"
+      }
+    },
+    {
+      "gridPos": {
+        "h": 7,
+        "w": 5,
+        "x": 0,
+        "y": 16
+      },
+      "id": 36,
+      "libraryPanel": {
+        "uid": "SCFytFq4k",
+        "name": "Array Wattage"
+      }
+    },
+    {
+      "gridPos": {
+        "h": 7,
+        "w": 7,
+        "x": 5,
+        "y": 16
+      },
+      "id": 22,
+      "libraryPanel": {
+        "uid": "ZIfYWCC4z",
+        "name": "Battery Voltage"
+      }
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 23
+      },
+      "id": 47,
+      "panels": [],
+      "title": "Inverters Drill Down",
+      "type": "row"
+    },
+    {
+      "gridPos": {
+        "h": 11,
+        "w": 12,
+        "x": 0,
+        "y": 24
+      },
+      "id": 56,
+      "libraryPanel": {
+        "uid": "PRG6bFq4k",
+        "name": "Inverter AC Watts"
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "description": "Inverter AC Load Percent",
+      "fieldConfig": {
+        "defaults": {
+          "links": [],
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 11,
+        "w": 12,
+        "x": 12,
+        "y": 24
+      },
+      "hiddenSeries": false,
+      "id": 54,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "10.2.2",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "$$hashKey": "object:115",
+          "alias": "/Yesterday/",
+          "dashLength": 1,
+          "dashes": true,
+          "fill": 0,
+          "fillGradient": 0
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "mpp_solar_load_percentage{instance=\"$node\",job=\"$job\"}",
+          "interval": "",
+          "legendFormat": "{{inverter}} AC Load %",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "mpp_solar_load_percentage{instance=\"$node\",job=\"$job\"} offset 24h",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "{{inverter}} AC Load % Yesterday",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "Inverter AC Load %",
+      "tooltip": {
+        "shared": true,
+        "sort": 1,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:87",
+          "format": "percent",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:88",
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+    {
+      "alert": {
+        "alertRuleTags": {},
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [
+                90
+              ],
+              "type": "gt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": [
+                "A",
+                "10s",
+                "now"
+              ]
+            },
+            "reducer": {
+              "params": [],
+              "type": "last"
+            },
+            "type": "query"
+          }
+        ],
+        "executionErrorState": "alerting",
+        "for": "1m",
+        "frequency": "10s",
+        "handler": 1,
+        "message": "Inverter $(inverter) heatsink temperature is high!",
+        "name": "Inverter heat_sink temperature alert",
+        "noDataState": "keep_state",
+        "notifications": []
+      },
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "description": "Internal heatsink temperature of each inverter depends on QPIGS output.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius"
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 11,
+        "w": 12,
+        "x": 0,
+        "y": 35
+      },
+      "hiddenSeries": false,
+      "id": 32,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "10.2.2",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "$$hashKey": "object:1371",
+          "alias": "/Temp Yesterday/",
+          "dashLength": 1,
+          "dashes": true,
+          "fill": 0
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "mpp_solar_inverter_heat_sink_temperature{instance=\"$node\",job=\"$job\"}",
+          "legendFormat": "{{inverter}}",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "mpp_solar_inverter_heat_sink_temperature{instance=\"$node\",job=\"$job\"} offset 24h",
+          "hide": false,
+          "legendFormat": "{{inverter}} Temp Yesterday",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "thresholds": [
+        {
+          "colorMode": "critical",
+          "fill": true,
+          "line": true,
+          "op": "gt",
+          "value": 90,
+          "visible": true
+        }
+      ],
+      "timeRegions": [],
+      "title": "Inverter heat_sink temperature",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:1343",
+          "format": "celsius",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:1344",
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+    {
+      "alert": {
+        "alertRuleTags": {},
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [
+                95
+              ],
+              "type": "lt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": [
+                "A",
+                "1m",
+                "now"
+              ]
+            },
+            "reducer": {
+              "params": [],
+              "type": "last"
+            },
+            "type": "query"
+          }
+        ],
+        "executionErrorState": "alerting",
+        "for": "1m",
+        "frequency": "10s",
+        "handler": 1,
+        "message": "AC Brown out or Utility offline!",
+        "name": "Grid Voltage alert",
+        "noDataState": "keep_state",
+        "notifications": []
+      },
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "description": "As detected by each inverter utilities voltage",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 4,
+      "gridPos": {
+        "h": 11,
+        "w": 12,
+        "x": 12,
+        "y": 35
+      },
+      "hiddenSeries": false,
+      "id": 30,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": false
+      },
+      "percentage": false,
+      "pluginVersion": "10.2.2",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "mpp_solar_grid_voltage{instance=\"$node\",job=\"$job\"}",
+          "interval": "",
+          "legendFormat": "{{inverter}} Grid Voltage",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "thresholds": [
+        {
+          "colorMode": "critical",
+          "fill": false,
+          "line": false,
+          "op": "lt",
+          "value": 95,
+          "visible": true
+        }
+      ],
+      "timeRegions": [],
+      "title": "Grid Voltage",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:505",
+          "decimals": 1,
+          "format": "volt",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:506",
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+    {
+      "gridPos": {
+        "h": 11,
+        "w": 12,
+        "x": 0,
+        "y": 46
+      },
+      "id": 28,
+      "libraryPanel": {
+        "uid": "VOHd2jjVz",
+        "name": "Battery Voltage graph"
+      }
+    },
+    {
+      "alert": {
+        "alertRuleTags": {
+          "A": "A"
+        },
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [
+                99
+              ],
+              "type": "gt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": [
+                "A",
+                "10s",
+                "now"
+              ]
+            },
+            "reducer": {
+              "params": [],
+              "type": "avg"
+            },
+            "type": "query"
+          }
+        ],
+        "executionErrorState": "keep_state",
+        "for": "1m",
+        "frequency": "10s",
+        "handler": 1,
+        "message": "Battery Fully Charged or System ERROR",
+        "name": "Battery SOC alert",
+        "noDataState": "keep_state",
+        "notifications": []
+      },
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "decimals": 0,
+      "description": "Battery State Of Charge",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 4,
+      "gridPos": {
+        "h": 11,
+        "w": 12,
+        "x": 12,
+        "y": 46
+      },
+      "hiddenSeries": false,
+      "id": 26,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "10.2.2",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "$$hashKey": "object:283",
+          "alias": "/SOC Yesterday/",
+          "dashLength": 1,
+          "dashes": true,
+          "fill": 0,
+          "fillGradient": 0
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "mpp_solar_battery_capacity{cmd!=\"QPIGS\"}",
+          "interval": "",
+          "legendFormat": "{{inverter}} SOC",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "mpp_solar_battery_capacity{cmd!=\"QPIGS\"} offset 24h",
+          "interval": "",
+          "legendFormat": "{{inverter}} SOC Yesterday",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "thresholds": [
+        {
+          "colorMode": "critical",
+          "fill": true,
+          "line": true,
+          "op": "gt",
+          "value": 99,
+          "visible": true
+        }
+      ],
+      "timeRegions": [],
+      "title": "Battery SOC",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:93",
+          "format": "percent",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:94",
+          "format": "percent",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "description": "Shows charging or discharging current",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 15,
+        "w": 24,
+        "x": 0,
+        "y": 57
+      },
+      "hiddenSeries": false,
+      "id": 61,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "10.2.2",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "mpp_solar_battery_charging_current{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS\"} - mpp_solar_battery_discharge_current{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS\"}",
+          "legendFormat": "{{inverter}} Charge",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum(mpp_solar_battery_charging_current{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS\"} - mpp_solar_battery_discharge_current{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS\"})",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "Overall",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "Battery current status",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:166",
+          "format": "amp",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:167",
+          "format": "short",
+          "logBase": 1,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+    {
+      "gridPos": {
+        "h": 15,
+        "w": 24,
+        "x": 0,
+        "y": 72
+      },
+      "id": 34,
+      "libraryPanel": {
+        "uid": "ruaxAK3Vk",
+        "name": "MPPT PV Charging Watts"
+      }
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 87
+      },
+      "id": 52,
+      "panels": [],
+      "title": "Array Drill down",
+      "type": "row"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "amp"
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 13,
+        "w": 12,
+        "x": 0,
+        "y": 88
+      },
+      "hiddenSeries": false,
+      "id": 58,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "10.2.2",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "{__name__=~\"mpp_solar_.*._input_current\",instance=\"$node\",job=\"$job\",cmd!=\"QPIGS\",cmd!=\"QPIGS2\"}",
+          "legendFormat": "{{inverter}} - {{__name__}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "Current by array",
+      "tooltip": {
+        "shared": true,
+        "sort": 2,
+        "value_type": "individual"
+      },
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "/mpp_solar_([\\S+]+)_input_current/",
+            "renamePattern": "$1"
+          }
+        }
+      ],
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:377",
+          "format": "amp",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:378",
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "volt"
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 13,
+        "w": 12,
+        "x": 12,
+        "y": 88
+      },
+      "hiddenSeries": false,
+      "id": 59,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "10.2.2",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "{__name__=~\"mpp_solar_.*._input_voltage\",instance=\"$node\",job=\"$job\",cmd!=\"QPIGS\",cmd!=\"QPIGS2\"}",
+          "legendFormat": "{{inverter}} - {{__name__}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "Voltage by array",
+      "tooltip": {
+        "shared": true,
+        "sort": 2,
+        "value_type": "individual"
+      },
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "/mpp_solar_([\\S+]+)_input_voltage/",
+            "renamePattern": "$1"
+          }
+        }
+      ],
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:288",
+          "format": "volt",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:289",
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "watt"
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 20,
+        "w": 24,
+        "x": 0,
+        "y": 101
+      },
+      "hiddenSeries": false,
+      "id": 43,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "10.2.2",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "$$hashKey": "object:498",
+          "alias": "/Yesterday/",
+          "dashLength": 1,
+          "dashes": true,
+          "fill": 0,
+          "fillGradient": 0,
+          "hiddenSeries": true
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "mpp_solar_pv1_input_current{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS\"} * mpp_solar_pv1_input_voltage{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS\"}",
+          "legendFormat": "{{inverter}} PV1",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "mpp_solar_pv2_input_current{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS2\"} * mpp_solar_pv2_input_voltage{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS2\"}",
+          "hide": false,
+          "legendFormat": "{{inverter}}  PV2",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "mpp_solar_pv3_input_current{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS2\"} * mpp_solar_pv3_input_voltage{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS2\"}",
+          "hide": false,
+          "legendFormat": "{{inverter}}  PV3",
+          "range": true,
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "mpp_solar_pv1_input_current{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS\"} * mpp_solar_pv1_input_voltage{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS\"} offset 24h",
+          "hide": false,
+          "legendFormat": "{{inverter}} PV1 Yesterday",
+          "range": true,
+          "refId": "D"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "mpp_solar_pv2_input_current{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS2\"} * mpp_solar_pv2_input_voltage{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS2\"} offset 24h",
+          "hide": false,
+          "legendFormat": "{{inverter}}  PV2 Yesterday",
+          "range": true,
+          "refId": "E"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "mpp_solar_pv3_input_current{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS2\"} * mpp_solar_pv3_input_voltage{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS2\"} offset 24h",
+          "hide": false,
+          "legendFormat": "{{inverter}}  PV3 Yesterday",
+          "range": true,
+          "refId": "F"
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "Array Wattage",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:470",
+          "format": "watt",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:471",
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 38,
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "Prometheus",
+          "value": "PBFA97CFB590B2093"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "Datasource",
+        "multi": false,
+        "name": "datasource",
+        "options": [],
+        "query": "prometheus",
+        "queryValue": "",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "definition": "label_values(node_uname_info,job)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Job",
+        "multi": false,
+        "name": "job",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(node_uname_info,job)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "definition": "label_values(node_uname_info{job=\"$job\"},instance)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Node",
+        "multi": false,
+        "name": "node",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(node_uname_info{job=\"$job\"},instance)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-12h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "mpp_solar",
+  "uid": "EOSZe9jVz",
+  "version": 43,
+  "weekStart": ""
+}
