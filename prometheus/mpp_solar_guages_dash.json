@@ -2039,7 +2039,7 @@
             "h": 22,
             "w": 24,
             "x": 0,
-            "y": 1
+            "y": 9
           },
           "id": 38,
           "options": {
@@ -2378,13 +2378,9 @@
           {
             "matcher": {
               "id": "byRegexp",
-              "options": "Total"
+              "options": "/Total/"
             },
             "properties": [
-              {
-                "id": "max",
-                "value": 1600
-              },
               {
                 "id": "color",
                 "value": {
@@ -2449,9 +2445,40 @@
           "range": false,
           "rawQuery": false,
           "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "count ({__name__=~\"mpp_solar_.*_input_voltage\", cmd!=\"QPIGS\", cmd!=\"QPIGS2\"}  >= .1) * 4000",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "C"
         }
       ],
       "title": "Array Power by Inverter",
+      "transformations": [
+        {
+          "id": "configFromData",
+          "options": {
+            "applyTo": {
+              "id": "byRegexp",
+              "options": "/Total/"
+            },
+            "configRefId": "C",
+            "mappings": [
+              {
+                "fieldName": "count ({__name__=~\"mpp_solar_.*_input_voltage\", cmd!=\"QPIGS\", cmd!=\"QPIGS2\"}  >= .1) * 4000",
+                "handlerKey": "max"
+              }
+            ]
+          }
+        }
+      ],
       "type": "gauge"
     },
     {
@@ -3751,6 +3778,6 @@
   "timezone": "browser",
   "title": "mpp_solar",
   "uid": "EOSZe9jVz",
-  "version": 165,
+  "version": 166,
   "weekStart": ""
 }

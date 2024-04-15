@@ -1040,10 +1040,6 @@
               },
               "properties": [
                 {
-                  "id": "max",
-                  "value": 1600
-                },
-                {
                   "id": "color",
                   "value": {
                     "mode": "continuous-GrYlRd"
@@ -1073,7 +1069,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "PBFA97CFB590B2093"
+              "uid": "${datasource}"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -1089,7 +1085,7 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "PBFA97CFB590B2093"
+              "uid": "${datasource}"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -1101,9 +1097,45 @@
             "range": false,
             "rawQuery": false,
             "refId": "B"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "disableTextWrap": false,
+            "editorMode": "code",
+            "expr": "count ({__name__=~\"mpp_solar_.*_input_voltage\", cmd!=\"QPIGS\", cmd!=\"QPIGS2\"}  >= .1) * 4000",
+            "fullMetaSearch": false,
+            "hide": false,
+            "includeNullMetadata": true,
+            "instant": false,
+            "legendFormat": "__auto",
+            "range": true,
+            "refId": "C",
+            "useBackend": false
           }
         ],
         "title": "Array Power by Inverter",
+        "transformations": [
+          {
+            "id": "configFromData",
+            "options": {
+              "applyTo": {
+                "id": "byRegexp",
+                "options": "/Total/"
+              },
+              "configRefId": "C",
+              "mappings": [
+                {
+                  "fieldName": "count ({__name__=~\"mpp_solar_.*_input_voltage\", cmd!=\"QPIGS\", cmd!=\"QPIGS2\"}  >= .1) * 4000",
+                  "handlerKey": "max",
+                  "reducerId": "lastNotNull"
+                }
+              ]
+            }
+          }
+        ],
         "type": "gauge"
       }
     },
