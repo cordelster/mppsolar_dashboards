@@ -1006,7 +1006,7 @@
             "max": 8000,
             "min": 90,
             "thresholds": {
-              "mode": "absolute",
+              "mode": "percentage",
               "steps": [
                 {
                   "color": "super-light-blue",
@@ -1014,19 +1014,19 @@
                 },
                 {
                   "color": "#6ED0E0",
-                  "value": 90
+                  "value": 5
                 },
                 {
                   "color": "green",
-                  "value": 110
+                  "value": 10
                 },
                 {
                   "color": "#EAB839",
-                  "value": 6000
+                  "value": 70
                 },
                 {
                   "color": "red",
-                  "value": 7733
+                  "value": 90
                 }
               ]
             },
@@ -1036,14 +1036,21 @@
             {
               "matcher": {
                 "id": "byRegexp",
-                "options": "Total"
+                "options": "/Value/"
               },
               "properties": [
                 {
                   "id": "color",
                   "value": {
-                    "mode": "continuous-GrYlRd"
+                    "mode": "thresholds"
                   }
+                },
+                {
+                  "id": "displayName",
+                  "value": "Total"
+                },
+                {
+                  "id": "max"
                 }
               ]
             }
@@ -1065,7 +1072,27 @@
           "sizing": "auto"
         },
         "pluginVersion": "10.2.2",
+        "repeat": null,
         "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "disableTextWrap": false,
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "mpp_solar_output_mode{instance=\"$node\", job=\"$job\"}",
+            "format": "time_series",
+            "fullMetaSearch": false,
+            "hide": true,
+            "includeNullMetadata": true,
+            "instant": true,
+            "legendFormat": "__auto",
+            "range": false,
+            "refId": "D",
+            "useBackend": false
+          },
           {
             "datasource": {
               "type": "prometheus",
@@ -1074,10 +1101,11 @@
             "editorMode": "code",
             "exemplar": false,
             "expr": "sum by (inverter)({ __name__=~\"mpp_solar_.+_charging_power\", instance=\"$node\", job=\"$job\" })",
+            "format": "time_series",
             "hide": false,
             "instant": true,
             "interval": "",
-            "legendFormat": "__auto",
+            "legendFormat": "{{myStr}} - {{inverter}}",
             "range": false,
             "rawQuery": false,
             "refId": "A"
@@ -1087,16 +1115,21 @@
               "type": "prometheus",
               "uid": "${datasource}"
             },
-            "editorMode": "code",
+            "disableTextWrap": false,
+            "editorMode": "builder",
             "exemplar": false,
-            "expr": "sum({ __name__=~\"mpp_solar_.+_charging_power\", instance=\"$node\", job=\"$job\" })",
+            "expr": "sum({__name__=~\"mpp_solar_.+_charging_power\", instance=\"$node\", job=\"$job\"})",
+            "format": "time_series",
+            "fullMetaSearch": false,
             "hide": false,
+            "includeNullMetadata": true,
             "instant": true,
             "interval": "",
             "legendFormat": "Total",
             "range": false,
             "rawQuery": false,
-            "refId": "B"
+            "refId": "B",
+            "useBackend": false
           },
           {
             "datasource": {
@@ -1105,13 +1138,15 @@
             },
             "disableTextWrap": false,
             "editorMode": "code",
-            "expr": "count ({__name__=~\"mpp_solar_.*_input_voltage\", cmd!=\"QPIGS\", cmd!=\"QPIGS2\"}  >= .1) * 4000",
+            "exemplar": false,
+            "expr": "count ({__name__=~\"mpp_solar_.*_input_voltage\", cmd!=\"QPIGS\", cmd!=\"QPIGS2\"}  >= 0.1) * 4000",
+            "format": "time_series",
             "fullMetaSearch": false,
             "hide": false,
             "includeNullMetadata": true,
-            "instant": false,
+            "instant": true,
             "legendFormat": "__auto",
-            "range": true,
+            "range": false,
             "refId": "C",
             "useBackend": false
           }
@@ -1122,17 +1157,23 @@
             "id": "configFromData",
             "options": {
               "applyTo": {
-                "id": "byRegexp",
-                "options": "/Total/"
+                "id": "byName",
+                "options": "Total"
               },
               "configRefId": "C",
               "mappings": [
                 {
-                  "fieldName": "count ({__name__=~\"mpp_solar_.*_input_voltage\", cmd!=\"QPIGS\", cmd!=\"QPIGS2\"}  >= .1) * 4000",
-                  "handlerKey": "max",
-                  "reducerId": "lastNotNull"
+                  "fieldName": "count ({__name__=~\"mpp_solar_.*_input_voltage\", cmd!=\"QPIGS\", cmd!=\"QPIGS2\"}  >= 0.1) * 4000",
+                  "handlerKey": "max"
                 }
               ]
+            }
+          },
+          {
+            "disabled": true,
+            "id": "joinByLabels",
+            "options": {
+              "value": "inverter"
             }
           }
         ],
@@ -3598,7 +3639,7 @@
     ]
   },
   "time": {
-    "from": "now-12h",
+    "from": "now-6h",
     "to": "now"
   },
   "timepicker": {},

@@ -634,7 +634,7 @@
             },
             "editorMode": "code",
             "exemplar": false,
-            "expr": "mpp_solar_battery_capacity{instance=\"$node\",job=\"$job\",cmd!=\"QPIGS|QPIGS2\"}",
+            "expr": "mpp_solar_battery_capacity{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS|QPIGS2\"}",
             "instant": true,
             "interval": "",
             "legendFormat": "{{inverter}}",
@@ -648,7 +648,7 @@
             },
             "editorMode": "code",
             "exemplar": false,
-            "expr": "mpp_solar_battery_capacity{instance=\"$node\",job=\"$job\",cmd!=\"QPIGS|QPIGS2\"} offset 24h",
+            "expr": "mpp_solar_battery_capacity{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS|QPIGS2\"} offset 24h",
             "instant": true,
             "interval": "",
             "legendFormat": "{{inverter}} Yesterday",
@@ -2347,7 +2347,7 @@
           "max": 8000,
           "min": 90,
           "thresholds": {
-            "mode": "absolute",
+            "mode": "percentage",
             "steps": [
               {
                 "color": "super-light-blue",
@@ -2355,19 +2355,19 @@
               },
               {
                 "color": "#6ED0E0",
-                "value": 90
+                "value": 10
               },
               {
                 "color": "green",
-                "value": 110
+                "value": 20
               },
               {
                 "color": "#EAB839",
-                "value": 6000
+                "value": 80
               },
               {
                 "color": "red",
-                "value": 7733
+                "value": 90
               }
             ]
           },
@@ -2380,14 +2380,7 @@
               "id": "byRegexp",
               "options": "/Total/"
             },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "mode": "continuous-GrYlRd"
-                }
-              }
-            ]
+            "properties": []
           }
         ]
       },
@@ -3778,6 +3771,6 @@
   "timezone": "browser",
   "title": "mpp_solar",
   "uid": "EOSZe9jVz",
-  "version": 166,
+  "version": 169,
   "weekStart": ""
 }
