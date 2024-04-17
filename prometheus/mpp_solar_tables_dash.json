@@ -24,26 +24,55 @@
             "uid": "f19c9c64-1130-4d31-bac1-0f75a8b29765"
           },
           {
-            "name": "Inverter AC Load %",
-            "uid": "e99ca9c5-bd1e-40f8-8701-4ddb6b40bc2d"
+            "name": "Inverter heat_sink temperature graph",
+            "uid": "a636956f-8a29-4dd7-93d3-02b5232c36b6"
           },
           {
-            "name": "Battery current status - v2",
-            "uid": "cf6a2363-22a9-4620-89e6-2f37d5c93877"
+            "name": "Grid Voltage Graph",
+            "uid": "e7dc5da8-b8de-4d36-b1b9-3d819fb56237"
           },
           {
-            "name": "Current by array",
-            "uid": "acedab14-8335-47e8-9c90-2f0834952b6f"
-          },
-          {
-            "name": "Voltage by array",
-            "uid": "a4ac0846-da60-4663-9f99-d59a26648375"
+            "name": "Battery SOC",
+            "uid": "c95170c8-6f12-4dfd-8941-2d51c2d13871"
           }
         ]
       }
     }
   ],
   "__elements": {
+    "a179b231-2e29-445c-a6a7-5f0f04533bf3": {
+      "name": "Solar Config",
+      "uid": "a179b231-2e29-445c-a6a7-5f0f04533bf3",
+      "kind": 1,
+      "model": {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "description": "",
+        "options": {
+          "code": {
+            "language": "plaintext",
+            "showLineNumbers": false,
+            "showMiniMap": false
+          },
+          "content": "# MPP_Solar\nThis Dashboard takes avantage of using prom output from mpp_solar with command output from QPGS and QPIGS.\nThis output can be directed to a text file while building the file, then moved to node_exporter folder as a prom file.\n\nDesigned originally for Rich Solar 6548 and should work for MPP LV6548 and the like. Should also work with other inverters though thresholds should be adjusted for each case based on the models abilities.\nI have created many panels to pick and choose from so you can remove what you do not want.\nAll panels are made as library items, so you can restore any panel that has been removed.\n\nSome of the power guages, have a dynimic \"Total\" MAX set according to environment for each. For other inverter models, the multiplier may need to be changed in the equation, as well as the first set of gauge maximum values. The overides should not be changed else it breaks.\n\nAdjust your serial ports as needed. \n\n`Example configurations:`\n```\n# cat /etc/mppsolar/mpp_qpgs.conf\n[SETUP]\npause=5\n\n[Inverter_2]\nport=/dev/ttyUSB2\nprotocol=PI30max\ncommand=QPGS2\ntag=QPGS2\noutputs=prom\ndev=SCC2\n\n[Inverter_1]\nport=/dev/ttyUSB0\nprotocol=PI30max\ncommand=QPGS1\ntag=QPGS1\noutputs=prom\ndev=SCC1\n```\n\n\n```\n # cat /etc/mppsolar/mpp_qpigs.conf\n # This output required for Inverter heatsink temp, and PV1 charge wattage.\n[SETUP]\npause=5\n\n[Inverter_2]\nport=/dev/ttyUSB2\nprotocol=PI30max\ncommand=QPIGS\noutputs=prom\ndev=SCC2\n\n[Inverter_1]\nport=/dev/ttyUSB0\nprotocol=PI30max\ncommand=QPIGS\noutputs=prom\ndev=SCC1\n```\n```\n# cat /etc/mppsolar/mpp_qpigs2.conf\n### This config for inverters with more than one PV input, to retrive PV2 Charge Wattage output.\n### Thoogh not a requirement with this dashboard.\n[SETUP]\npause=5\n\n[Inverter_2]\nport=/dev/ttyUSB2\nprotocol=PI30max\ncommand=QPIGS2\noutputs=prom\ndev=SCC2\n\n[Inverter_1]\nport=/dev/ttyUSB0\nprotocol=PI30max\ncommand=QPIGS2\noutputs=prom\ndev=SCC1\n```\nExecutable in /usr/local/bin/\n```\n# cat /usr/local/bin/mpp-get-data.sh\n#!/bin/ash\ndataFile=\"mppsolar\"\ndataDir=\"/var/lib/node-exporter/mppsolar/\"\n\ncheckpath -d \"$dataDir\" -m 755 -o node_exporter:node_exporter\n\nwhile : ; do\n\n        `/usr/bin/mpp-solar -C /etc/mppsolar/mpp_qpgs.conf > ${dataDir}${dataFile}.$$` && \\\n        `/usr/bin/mpp-solar -C /etc/mppsolar/mpp_qpigs.conf >> ${dataDir}${dataFile}.$$` && \\\n        `/usr/bin/mpp-solar -C /etc/mppsolar/mpp_qpigs2.conf >> ${dataDir}${dataFile}.$$` && \\\n        mv ${dataDir}${dataFile}.$$ ${dataDir}${dataFile}.prom\n        sleep 5\ndone\n```\n\nCreate a OpenRC, SysV or systemd startup for the executable as pertains to your installation.\n\nFor markdown syntax help: [commonmark.org/help](https://commonmark.org/help/)",
+          "mode": "markdown"
+        },
+        "pluginVersion": "10.3.3",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "WIyb0ajVk"
+            },
+            "refId": "A"
+          }
+        ],
+        "title": "Solar Config",
+        "type": "text"
+      }
+    },
     "t4IP69C4z": {
       "name": "Node System",
       "uid": "t4IP69C4z",
@@ -1310,7 +1339,7 @@
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "description": "",
+        "description": "Total is dynamic by what units return \"is_switched_on\" and there is one equation each for MAX and MIN values.",
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -1496,7 +1525,7 @@
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "description": "AC load wattage on inverters",
+        "description": "AC load wattage on inverters. The \"Total\" MAX is dynamic according to \"ac_output_active_power\" values count.",
         "fieldConfig": {
           "defaults": {
             "decimals": 1,
@@ -1912,9 +1941,9 @@
           "legend": {
             "calcs": [
               "mean",
-              "lastNotNull",
+              "min",
               "max",
-              "min"
+              "lastNotNull"
             ],
             "displayMode": "table",
             "placement": "bottom",
@@ -1966,7 +1995,7 @@
       "model": {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS-FOR-LIBRARY-PANEL}"
+          "uid": "${DS_PROMETHEUS}"
         },
         "description": "Inverter AC Load Percent",
         "fieldConfig": {
@@ -2049,17 +2078,13 @@
             }
           ]
         },
-        "libraryPanel": {
-          "name": "Inverter AC Load %",
-          "uid": "e99ca9c5-bd1e-40f8-8701-4ddb6b40bc2d"
-        },
         "options": {
           "legend": {
             "calcs": [
               "mean",
-              "lastNotNull",
+              "min",
               "max",
-              "min"
+              "lastNotNull"
             ],
             "displayMode": "table",
             "placement": "bottom",
@@ -2099,6 +2124,326 @@
           }
         ],
         "title": "Inverter AC Load %",
+        "type": "timeseries"
+      }
+    },
+    "a636956f-8a29-4dd7-93d3-02b5232c36b6": {
+      "name": "Inverter heat_sink temperature graph",
+      "uid": "a636956f-8a29-4dd7-93d3-02b5232c36b6",
+      "kind": 1,
+      "model": {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS-FOR-LIBRARY-PANEL}"
+        },
+        "alert": {
+          "alertRuleTags": {},
+          "conditions": [
+            {
+              "evaluator": {
+                "params": [
+                  90
+                ],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "and"
+              },
+              "query": {
+                "params": [
+                  "A",
+                  "10s",
+                  "now"
+                ]
+              },
+              "reducer": {
+                "params": [],
+                "type": "last"
+              },
+              "type": "query"
+            }
+          ],
+          "executionErrorState": "alerting",
+          "for": "1m",
+          "frequency": "10s",
+          "handler": 1,
+          "message": "Inverter $(inverter) heatsink temperature is high!",
+          "name": "Inverter heat_sink temperature alert",
+          "noDataState": "keep_state",
+          "notifications": []
+        },
+        "description": "Internal heatsink temperature of each inverter depends on QPIGS output.",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 10,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "line+area"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "transparent",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 90
+                }
+              ]
+            },
+            "unit": "celsius",
+            "unitScale": true
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byRegexp",
+                "options": "/Temp Yesterday/"
+              },
+              "properties": [
+                {
+                  "id": "custom.fillOpacity",
+                  "value": 0
+                },
+                {
+                  "id": "custom.lineStyle",
+                  "value": {
+                    "dash": [
+                      1,
+                      10
+                    ],
+                    "fill": "dash"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "libraryPanel": {
+          "name": "Inverter heat_sink temperature graph",
+          "uid": "a636956f-8a29-4dd7-93d3-02b5232c36b6"
+        },
+        "options": {
+          "legend": {
+            "calcs": [
+              "mean",
+              "min",
+              "max",
+              "lastNotNull"
+            ],
+            "displayMode": "table",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "mode": "multi",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "10.3.3",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "expr": "mpp_solar_inverter_heat_sink_temperature{instance=\"$node\", job=\"$job\"}",
+            "legendFormat": "{{inverter}}",
+            "range": true,
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "expr": "mpp_solar_inverter_heat_sink_temperature{instance=\"$node\", job=\"$job\"} offset 24h",
+            "hide": false,
+            "legendFormat": "{{inverter}} Temp Yesterday",
+            "range": true,
+            "refId": "B"
+          }
+        ],
+        "title": "Inverter heat_sink temperature",
+        "type": "timeseries"
+      }
+    },
+    "e7dc5da8-b8de-4d36-b1b9-3d819fb56237": {
+      "name": "Grid Voltage Graph",
+      "uid": "e7dc5da8-b8de-4d36-b1b9-3d819fb56237",
+      "kind": 1,
+      "model": {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS-FOR-LIBRARY-PANEL}"
+        },
+        "alert": {
+          "alertRuleTags": {},
+          "conditions": [
+            {
+              "evaluator": {
+                "params": [
+                  95
+                ],
+                "type": "lt"
+              },
+              "operator": {
+                "type": "and"
+              },
+              "query": {
+                "params": [
+                  "A",
+                  "1m",
+                  "now"
+                ]
+              },
+              "reducer": {
+                "params": [],
+                "type": "last"
+              },
+              "type": "query"
+            }
+          ],
+          "executionErrorState": "alerting",
+          "for": "1m",
+          "frequency": "10s",
+          "handler": 1,
+          "message": "AC Brown out or Utility offline!",
+          "name": "Grid Voltage alert",
+          "noDataState": "keep_state",
+          "notifications": []
+        },
+        "description": "As detected by each inverter utilities voltage",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 40,
+              "gradientMode": "opacity",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "line"
+              }
+            },
+            "decimals": 1,
+            "links": [],
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red",
+                  "value": null
+                },
+                {
+                  "color": "transparent",
+                  "value": 95
+                }
+              ]
+            },
+            "unit": "volt",
+            "unitScale": true
+          },
+          "overrides": []
+        },
+        "libraryPanel": {
+          "name": "Grid Voltage Graph",
+          "uid": "e7dc5da8-b8de-4d36-b1b9-3d819fb56237"
+        },
+        "options": {
+          "legend": {
+            "calcs": [
+              "mean",
+              "min",
+              "max",
+              "lastNotNull"
+            ],
+            "displayMode": "table",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "mode": "multi",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "10.3.3",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "expr": "mpp_solar_grid_voltage{instance=\"$node\", job=\"$job\"}",
+            "interval": "",
+            "legendFormat": "{{inverter}} Grid Voltage",
+            "range": true,
+            "refId": "A"
+          }
+        ],
+        "title": "Grid Voltage",
         "type": "timeseries"
       }
     },
@@ -2196,9 +2541,9 @@
           "legend": {
             "calcs": [
               "mean",
-              "lastNotNull",
+              "min",
               "max",
-              "min"
+              "lastNotNull"
             ],
             "displayMode": "table",
             "placement": "bottom",
@@ -2243,6 +2588,186 @@
         "type": "timeseries"
       }
     },
+    "c95170c8-6f12-4dfd-8941-2d51c2d13871": {
+      "name": "Battery SOC",
+      "uid": "c95170c8-6f12-4dfd-8941-2d51c2d13871",
+      "kind": 1,
+      "model": {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS-FOR-LIBRARY-PANEL}"
+        },
+        "alert": {
+          "alertRuleTags": {
+            "A": "A"
+          },
+          "conditions": [
+            {
+              "evaluator": {
+                "params": [
+                  99
+                ],
+                "type": "gt"
+              },
+              "operator": {
+                "type": "and"
+              },
+              "query": {
+                "params": [
+                  "A",
+                  "10s",
+                  "now"
+                ]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
+              "type": "query"
+            }
+          ],
+          "executionErrorState": "keep_state",
+          "for": "1m",
+          "frequency": "10s",
+          "handler": 1,
+          "message": "Battery Fully Charged or System ERROR",
+          "name": "Battery SOC alert",
+          "noDataState": "keep_state",
+          "notifications": []
+        },
+        "description": "Battery State Of Charge",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 40,
+              "gradientMode": "opacity",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "never",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "line+area"
+              }
+            },
+            "links": [],
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "transparent",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 99
+                }
+              ]
+            },
+            "unit": "percent",
+            "unitScale": true
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byRegexp",
+                "options": "/SOC Yesterday/"
+              },
+              "properties": [
+                {
+                  "id": "custom.fillOpacity",
+                  "value": 0
+                },
+                {
+                  "id": "custom.lineStyle",
+                  "value": {
+                    "dash": [
+                      1,
+                      10
+                    ],
+                    "fill": "dash"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "libraryPanel": {
+          "name": "Battery SOC",
+          "uid": "c95170c8-6f12-4dfd-8941-2d51c2d13871"
+        },
+        "options": {
+          "legend": {
+            "calcs": [
+              "mean",
+              "min",
+              "max",
+              "lastNotNull"
+            ],
+            "displayMode": "table",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "mode": "multi",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "10.3.3",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "WIyb0ajVk"
+            },
+            "editorMode": "code",
+            "expr": "mpp_solar_battery_capacity{cmd!=\"QPIGS\"}",
+            "interval": "",
+            "legendFormat": "{{inverter}} SOC",
+            "range": true,
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "WIyb0ajVk"
+            },
+            "editorMode": "code",
+            "expr": "mpp_solar_battery_capacity{cmd!=\"QPIGS\"} offset 24h",
+            "interval": "",
+            "legendFormat": "{{inverter}} SOC Yesterday",
+            "range": true,
+            "refId": "B"
+          }
+        ],
+        "title": "Battery SOC",
+        "type": "timeseries"
+      }
+    },
     "cf6a2363-22a9-4620-89e6-2f37d5c93877": {
       "name": "Battery current status - v2",
       "uid": "cf6a2363-22a9-4620-89e6-2f37d5c93877",
@@ -2250,7 +2775,7 @@
       "model": {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS-FOR-LIBRARY-PANEL}"
+          "uid": "${DS_PROMETHEUS}"
         },
         "description": "",
         "fieldConfig": {
@@ -2310,16 +2835,12 @@
           },
           "overrides": []
         },
-        "libraryPanel": {
-          "name": "Battery current status - v2",
-          "uid": "cf6a2363-22a9-4620-89e6-2f37d5c93877"
-        },
         "options": {
           "legend": {
             "calcs": [
+              "mean",
               "min",
               "max",
-              "mean",
               "lastNotNull"
             ],
             "displayMode": "table",
@@ -2455,9 +2976,9 @@
           "legend": {
             "calcs": [
               "mean",
-              "lastNotNull",
+              "min",
               "max",
-              "min"
+              "lastNotNull"
             ],
             "displayMode": "table",
             "placement": "bottom",
@@ -2528,7 +3049,7 @@
       "model": {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS-FOR-LIBRARY-PANEL}"
+          "uid": "${DS_PROMETHEUS}"
         },
         "description": "",
         "fieldConfig": {
@@ -2587,17 +3108,13 @@
           },
           "overrides": []
         },
-        "libraryPanel": {
-          "name": "Current by array",
-          "uid": "acedab14-8335-47e8-9c90-2f0834952b6f"
-        },
         "options": {
           "legend": {
             "calcs": [
               "mean",
-              "lastNotNull",
+              "min",
               "max",
-              "min"
+              "lastNotNull"
             ],
             "displayMode": "table",
             "placement": "bottom",
@@ -2644,7 +3161,7 @@
       "model": {
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS-FOR-LIBRARY-PANEL}"
+          "uid": "${DS_PROMETHEUS}"
         },
         "description": "",
         "fieldConfig": {
@@ -2703,17 +3220,13 @@
           },
           "overrides": []
         },
-        "libraryPanel": {
-          "name": "Voltage by array",
-          "uid": "a4ac0846-da60-4663-9f99-d59a26648375"
-        },
         "options": {
           "legend": {
             "calcs": [
               "mean",
-              "lastNotNull",
+              "min",
               "max",
-              "min"
+              "lastNotNull"
             ],
             "displayMode": "table",
             "placement": "bottom",
@@ -2853,9 +3366,9 @@
         "options": {
           "legend": {
             "calcs": [
+              "mean",
               "min",
               "max",
-              "mean",
               "lastNotNull"
             ],
             "displayMode": "table",
@@ -2969,18 +3482,6 @@
       "id": "prometheus",
       "name": "Prometheus",
       "version": "1.0.0"
-    },
-    {
-      "type": "panel",
-      "id": "text",
-      "name": "Text",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "timeseries",
-      "name": "Time series",
-      "version": ""
     }
   ],
   "annotations": {
@@ -3038,7 +3539,7 @@
   "liveNow": false,
   "panels": [
     {
-      "collapsed": true,
+      "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -3046,35 +3547,22 @@
         "y": 0
       },
       "id": 45,
-      "panels": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "gridPos": {
-            "h": 22,
-            "w": 24,
-            "x": 0,
-            "y": 105
-          },
-          "id": 38,
-          "options": {
-            "code": {
-              "language": "plaintext",
-              "showLineNumbers": false,
-              "showMiniMap": false
-            },
-            "content": "# MPP_Solar\nThis Dashboard takes avantage of using prom output from mpp_solar with command output from QPGS and QPIGS.\nThis output can be directed to a text file while building the file, then moved to node_exporter folder as a prom file.\n\nDesigned for Rich Solar 6548 and should work for MPP LV6548 and the like. Should also work with other inverters though thresholds should be adjusted for each case based on the models abilities.\n\nAdjust your serial ports as needed. \n\n`Example configurations:`\n```\n# cat /etc/mppsolar/mpp_qpgs.conf\n[SETUP]\npause=5\n\n[Inverter_2]\nport=/dev/ttyUSB2\nprotocol=PI30max\ncommand=QPGS2\ntag=QPGS2\noutputs=prom\ndev=SCC2\n\n[Inverter_1]\nport=/dev/ttyUSB0\nprotocol=PI30max\ncommand=QPGS1\ntag=QPGS1\noutputs=prom\ndev=SCC1\n```\n\n\n```\n # cat /etc/mppsolar/mpp_qpigs.conf\n # This output required for Inverter heatsink temp, and PV1 charge wattage.\n[SETUP]\npause=5\n\n[Inverter_2]\nport=/dev/ttyUSB2\nprotocol=PI30max\ncommand=QPIGS\noutputs=prom\ndev=SCC2\n\n[Inverter_1]\nport=/dev/ttyUSB0\nprotocol=PI30max\ncommand=QPIGS\noutputs=prom\ndev=SCC1\n```\n```\n# cat /etc/mppsolar/mpp_qpigs2.conf\n### This config for inverters with more than one PV input, to retrive PV2 Charge Wattage output.\n### Thoogh not a requirement with this dashboard.\n[SETUP]\npause=5\n\n[Inverter_2]\nport=/dev/ttyUSB2\nprotocol=PI30max\ncommand=QPIGS2\noutputs=prom\ndev=SCC2\n\n[Inverter_1]\nport=/dev/ttyUSB0\nprotocol=PI30max\ncommand=QPIGS2\noutputs=prom\ndev=SCC1\n```\nExecutable in /usr/local/bin/\n```\n# cat /usr/local/bin/mpp-get-data.sh\n#!/bin/ash\ndataFile=\"mppsolar\"\ndataDir=\"/var/lib/node-exporter/mppsolar/\"\n\ncheckpath -d \"$dataDir\" -m 755 -o node_exporter:node_exporter\n\nwhile : ; do\n\n        `/usr/bin/mpp-solar -C /etc/mppsolar/mpp_qpgs.conf > ${dataDir}${dataFile}.$$` && \\\n        `/usr/bin/mpp-solar -C /etc/mppsolar/mpp_qpigs.conf >> ${dataDir}${dataFile}.$$` && \\\n        `/usr/bin/mpp-solar -C /etc/mppsolar/mpp_qpigs2.conf >> ${dataDir}${dataFile}.$$` && \\\n        mv ${dataDir}${dataFile}.$$ ${dataDir}${dataFile}.prom\n        sleep 5\ndone\n```\n\nCreate a SysV or systemd startup for the executable.\n\nFor markdown syntax help: [commonmark.org/help](https://commonmark.org/help/)",
-            "mode": "markdown"
-          },
-          "pluginVersion": "10.3.3",
-          "title": "Solar Config",
-          "type": "text"
-        }
-      ],
+      "panels": [],
       "title": "About configuration",
       "type": "row"
+    },
+    {
+      "gridPos": {
+        "h": 22,
+        "w": 24,
+        "x": 0,
+        "y": 1
+      },
+      "id": 38,
+      "libraryPanel": {
+        "uid": "a179b231-2e29-445c-a6a7-5f0f04533bf3",
+        "name": "Solar Config"
+      }
     },
     {
       "collapsed": false,
@@ -3082,7 +3570,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 1
+        "y": 23
       },
       "id": 50,
       "panels": [],
@@ -3094,7 +3582,7 @@
         "h": 5,
         "w": 4,
         "x": 0,
-        "y": 2
+        "y": 24
       },
       "id": 8,
       "libraryPanel": {
@@ -3107,7 +3595,7 @@
         "h": 5,
         "w": 9,
         "x": 4,
-        "y": 2
+        "y": 24
       },
       "id": 67,
       "libraryPanel": {
@@ -3120,7 +3608,7 @@
         "h": 5,
         "w": 11,
         "x": 13,
-        "y": 2
+        "y": 24
       },
       "id": 68,
       "libraryPanel": {
@@ -3133,7 +3621,7 @@
         "h": 4,
         "w": 5,
         "x": 0,
-        "y": 7
+        "y": 29
       },
       "id": 66,
       "libraryPanel": {
@@ -3146,7 +3634,7 @@
         "h": 4,
         "w": 6,
         "x": 5,
-        "y": 7
+        "y": 29
       },
       "id": 6,
       "libraryPanel": {
@@ -3159,7 +3647,7 @@
         "h": 4,
         "w": 7,
         "x": 11,
-        "y": 7
+        "y": 29
       },
       "id": 42,
       "libraryPanel": {
@@ -3172,7 +3660,7 @@
         "h": 4,
         "w": 6,
         "x": 18,
-        "y": 7
+        "y": 29
       },
       "id": 24,
       "libraryPanel": {
@@ -3185,7 +3673,7 @@
         "h": 5,
         "w": 5,
         "x": 0,
-        "y": 11
+        "y": 33
       },
       "id": 48,
       "libraryPanel": {
@@ -3198,7 +3686,7 @@
         "h": 7,
         "w": 7,
         "x": 5,
-        "y": 11
+        "y": 33
       },
       "id": 70,
       "libraryPanel": {
@@ -3211,7 +3699,7 @@
         "h": 12,
         "w": 6,
         "x": 12,
-        "y": 11
+        "y": 33
       },
       "id": 63,
       "libraryPanel": {
@@ -3224,7 +3712,7 @@
         "h": 12,
         "w": 6,
         "x": 18,
-        "y": 11
+        "y": 33
       },
       "id": 40,
       "libraryPanel": {
@@ -3237,7 +3725,7 @@
         "h": 7,
         "w": 5,
         "x": 0,
-        "y": 16
+        "y": 38
       },
       "id": 36,
       "libraryPanel": {
@@ -3250,7 +3738,7 @@
         "h": 5,
         "w": 7,
         "x": 5,
-        "y": 18
+        "y": 40
       },
       "id": 22,
       "libraryPanel": {
@@ -3264,7 +3752,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 23
+        "y": 45
       },
       "id": 47,
       "panels": [],
@@ -3276,7 +3764,7 @@
         "h": 11,
         "w": 12,
         "x": 0,
-        "y": 24
+        "y": 46
       },
       "id": 56,
       "libraryPanel": {
@@ -3289,7 +3777,7 @@
         "h": 11,
         "w": 12,
         "x": 12,
-        "y": 24
+        "y": 46
       },
       "id": 54,
       "libraryPanel": {
@@ -3298,327 +3786,37 @@
       }
     },
     {
-      "alert": {
-        "alertRuleTags": {},
-        "conditions": [
-          {
-            "evaluator": {
-              "params": [
-                90
-              ],
-              "type": "gt"
-            },
-            "operator": {
-              "type": "and"
-            },
-            "query": {
-              "params": [
-                "A",
-                "10s",
-                "now"
-              ]
-            },
-            "reducer": {
-              "params": [],
-              "type": "last"
-            },
-            "type": "query"
-          }
-        ],
-        "executionErrorState": "alerting",
-        "for": "1m",
-        "frequency": "10s",
-        "handler": 1,
-        "message": "Inverter $(inverter) heatsink temperature is high!",
-        "name": "Inverter heat_sink temperature alert",
-        "noDataState": "keep_state",
-        "notifications": []
-      },
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "description": "Internal heatsink temperature of each inverter depends on QPIGS output.",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "line+area"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "transparent",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 90
-              }
-            ]
-          },
-          "unit": "celsius",
-          "unitScale": true
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": "/Temp Yesterday/"
-            },
-            "properties": [
-              {
-                "id": "custom.fillOpacity",
-                "value": 0
-              },
-              {
-                "id": "custom.lineStyle",
-                "value": {
-                  "dash": [
-                    1,
-                    10
-                  ],
-                  "fill": "dash"
-                }
-              }
-            ]
-          }
-        ]
-      },
       "gridPos": {
         "h": 11,
         "w": 12,
         "x": 0,
-        "y": 35
+        "y": 57
       },
-      "id": 32,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "lastNotNull",
-            "max",
-            "min"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "10.3.3",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "mpp_solar_inverter_heat_sink_temperature{instance=\"$node\",job=\"$job\"}",
-          "legendFormat": "{{inverter}}",
-          "range": true,
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "mpp_solar_inverter_heat_sink_temperature{instance=\"$node\",job=\"$job\"} offset 24h",
-          "hide": false,
-          "legendFormat": "{{inverter}} Temp Yesterday",
-          "range": true,
-          "refId": "B"
-        }
-      ],
-      "title": "Inverter heat_sink temperature",
-      "type": "timeseries"
+      "id": 81,
+      "libraryPanel": {
+        "uid": "a636956f-8a29-4dd7-93d3-02b5232c36b6",
+        "name": "Inverter heat_sink temperature graph"
+      }
     },
     {
-      "alert": {
-        "alertRuleTags": {},
-        "conditions": [
-          {
-            "evaluator": {
-              "params": [
-                95
-              ],
-              "type": "lt"
-            },
-            "operator": {
-              "type": "and"
-            },
-            "query": {
-              "params": [
-                "A",
-                "1m",
-                "now"
-              ]
-            },
-            "reducer": {
-              "params": [],
-              "type": "last"
-            },
-            "type": "query"
-          }
-        ],
-        "executionErrorState": "alerting",
-        "for": "1m",
-        "frequency": "10s",
-        "handler": 1,
-        "message": "AC Brown out or Utility offline!",
-        "name": "Grid Voltage alert",
-        "noDataState": "keep_state",
-        "notifications": []
-      },
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "description": "As detected by each inverter utilities voltage",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 40,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "line"
-            }
-          },
-          "decimals": 1,
-          "links": [],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red",
-                "value": null
-              },
-              {
-                "color": "transparent",
-                "value": 95
-              }
-            ]
-          },
-          "unit": "volt",
-          "unitScale": true
-        },
-        "overrides": []
-      },
       "gridPos": {
         "h": 11,
         "w": 12,
         "x": 12,
-        "y": 35
+        "y": 57
       },
-      "id": 30,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "lastNotNull",
-            "max",
-            "min"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "10.3.3",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "mpp_solar_grid_voltage{instance=\"$node\",job=\"$job\"}",
-          "interval": "",
-          "legendFormat": "{{inverter}} Grid Voltage",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Grid Voltage",
-      "type": "timeseries"
+      "id": 79,
+      "libraryPanel": {
+        "uid": "e7dc5da8-b8de-4d36-b1b9-3d819fb56237",
+        "name": "Grid Voltage Graph"
+      }
     },
     {
       "gridPos": {
         "h": 11,
         "w": 12,
         "x": 0,
-        "y": 46
+        "y": 68
       },
       "id": 28,
       "libraryPanel": {
@@ -3627,189 +3825,24 @@
       }
     },
     {
-      "alert": {
-        "alertRuleTags": {
-          "A": "A"
-        },
-        "conditions": [
-          {
-            "evaluator": {
-              "params": [
-                99
-              ],
-              "type": "gt"
-            },
-            "operator": {
-              "type": "and"
-            },
-            "query": {
-              "params": [
-                "A",
-                "10s",
-                "now"
-              ]
-            },
-            "reducer": {
-              "params": [],
-              "type": "avg"
-            },
-            "type": "query"
-          }
-        ],
-        "executionErrorState": "keep_state",
-        "for": "1m",
-        "frequency": "10s",
-        "handler": 1,
-        "message": "Battery Fully Charged or System ERROR",
-        "name": "Battery SOC alert",
-        "noDataState": "keep_state",
-        "notifications": []
-      },
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "description": "Battery State Of Charge",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 40,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "line+area"
-            }
-          },
-          "links": [],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "transparent",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 99
-              }
-            ]
-          },
-          "unit": "percent",
-          "unitScale": true
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byRegexp",
-              "options": "/SOC Yesterday/"
-            },
-            "properties": [
-              {
-                "id": "custom.fillOpacity",
-                "value": 0
-              },
-              {
-                "id": "custom.lineStyle",
-                "value": {
-                  "dash": [
-                    1,
-                    10
-                  ],
-                  "fill": "dash"
-                }
-              }
-            ]
-          }
-        ]
-      },
       "gridPos": {
         "h": 11,
         "w": 12,
         "x": 12,
-        "y": 46
+        "y": 68
       },
       "id": 26,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "lastNotNull",
-            "max",
-            "min"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "10.3.3",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "mpp_solar_battery_capacity{cmd!=\"QPIGS\"}",
-          "interval": "",
-          "legendFormat": "{{inverter}} SOC",
-          "range": true,
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "mpp_solar_battery_capacity{cmd!=\"QPIGS\"} offset 24h",
-          "interval": "",
-          "legendFormat": "{{inverter}} SOC Yesterday",
-          "range": true,
-          "refId": "B"
-        }
-      ],
-      "title": "Battery SOC",
-      "type": "timeseries"
+      "libraryPanel": {
+        "uid": "c95170c8-6f12-4dfd-8941-2d51c2d13871",
+        "name": "Battery SOC"
+      }
     },
     {
       "gridPos": {
         "h": 12,
         "w": 24,
         "x": 0,
-        "y": 57
+        "y": 79
       },
       "id": 71,
       "libraryPanel": {
@@ -3822,7 +3855,7 @@
         "h": 15,
         "w": 24,
         "x": 0,
-        "y": 69
+        "y": 91
       },
       "id": 34,
       "libraryPanel": {
@@ -3836,7 +3869,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 84
+        "y": 106
       },
       "id": 52,
       "panels": [],
@@ -3848,7 +3881,7 @@
         "h": 13,
         "w": 12,
         "x": 0,
-        "y": 85
+        "y": 107
       },
       "id": 77,
       "libraryPanel": {
@@ -3861,7 +3894,7 @@
         "h": 13,
         "w": 12,
         "x": 12,
-        "y": 85
+        "y": 107
       },
       "id": 75,
       "libraryPanel": {
@@ -3874,7 +3907,7 @@
         "h": 14,
         "w": 24,
         "x": 0,
-        "y": 98
+        "y": 120
       },
       "id": 73,
       "libraryPanel": {
@@ -3958,13 +3991,13 @@
     ]
   },
   "time": {
-    "from": "now-30d",
+    "from": "now-12h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "mpp_solar-v2",
   "uid": "IztLC16Vz",
-  "version": 25,
+  "version": 29,
   "weekStart": ""
 }
