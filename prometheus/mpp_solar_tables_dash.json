@@ -567,12 +567,13 @@
               "uid": "WIyb0ajVk"
             },
             "editorMode": "code",
+            "exemplar": false,
             "expr": "mpp_solar_is_switched_on{instance=\"$node\",job=\"$job\"}",
             "format": "table",
             "hide": false,
             "instant": true,
             "legendFormat": "__auto",
-            "range": true,
+            "range": false,
             "refId": "F"
           },
           {
@@ -612,12 +613,13 @@
               "uid": "${datasource}"
             },
             "editorMode": "code",
+            "exemplar": false,
             "expr": "mpp_solar_is_line_lost{instance=\"$node\",job=\"$job\"}",
             "format": "table",
             "hide": false,
             "instant": true,
             "legendFormat": "__auto",
-            "range": true,
+            "range": false,
             "refId": "C"
           },
           {
@@ -626,12 +628,13 @@
               "uid": "${datasource}"
             },
             "editorMode": "code",
+            "exemplar": false,
             "expr": "mpp_solar_is_scc_charging{instance=\"$node\",job=\"$job\"}",
             "format": "table",
             "hide": false,
             "instant": true,
             "legendFormat": "__auto",
-            "range": true,
+            "range": false,
             "refId": "D"
           },
           {
@@ -640,12 +643,13 @@
               "uid": "${datasource}"
             },
             "editorMode": "code",
+            "exemplar": false,
             "expr": "mpp_solar_is_scc_ok{instance=\"$node\",job=\"$job\"}",
             "format": "table",
             "hide": false,
             "instant": true,
             "legendFormat": "__auto",
-            "range": true,
+            "range": false,
             "refId": "E"
           }
         ],
@@ -3954,7 +3958,7 @@
     ]
   },
   "time": {
-    "from": "now-2d",
+    "from": "now-30d",
     "to": "now"
   },
   "timepicker": {},
