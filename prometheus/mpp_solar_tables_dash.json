@@ -1344,17 +1344,9 @@
               },
               "properties": [
                 {
-                  "id": "mappings",
-                  "value": []
-                },
-                {
-                  "id": "max",
-                  "value": 13200
-                },
-                {
                   "id": "thresholds",
                   "value": {
-                    "mode": "absolute",
+                    "mode": "percentage",
                     "steps": [
                       {
                         "color": "green",
@@ -1362,15 +1354,15 @@
                       },
                       {
                         "color": "#EAB839",
-                        "value": 11000
+                        "value": 70
                       },
                       {
                         "color": "dark-orange",
-                        "value": 12000
+                        "value": 80
                       },
                       {
                         "color": "red",
-                        "value": 13000
+                        "value": 90
                       }
                     ]
                   }
@@ -1423,9 +1415,40 @@
             "legendFormat": "Total",
             "range": false,
             "refId": "B"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "expr": "count (mpp_solar_ac_output_active_power{instance=\"$node\",job=\"$job\",cmd!=\"QPIGS\"}) * 6500",
+            "hide": false,
+            "instant": false,
+            "legendFormat": "__auto",
+            "range": true,
+            "refId": "C"
           }
         ],
         "title": "AC Power Watts",
+        "transformations": [
+          {
+            "id": "configFromData",
+            "options": {
+              "applyTo": {
+                "id": "byName",
+                "options": "Total"
+              },
+              "configRefId": "C",
+              "mappings": [
+                {
+                  "fieldName": "count (mpp_solar_ac_output_active_power{instance=\"solar1:9100\",job=\"node\",cmd!=\"QPIGS\"}) * 6500",
+                  "handlerKey": "max"
+                }
+              ]
+            }
+          }
+        ],
         "type": "gauge"
       }
     },
