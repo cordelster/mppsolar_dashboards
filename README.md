@@ -1,6 +1,10 @@
 # mppsolar_dashboards
 Grafana dashboards, Prometheus rules, and associated files for use with mpp-solar by John Blance using a Prometheus or Victoria Metrics tdb backend.
 
+I have created more panels than really necessary so those not comfortable with promql or grafana can move, size, and remove panels as they see fit.
+
+All panels are part of a library, so any removed panel can be restored, or easily placed in another dashboard.
+
 ![Grafana dashboard](https://github.com/cordelster/mppsolar_dashboards/blob/main/prometheus/pics/dash_guages.png)
 
 ## New! Consolidated some of the status into a table..
