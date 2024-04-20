@@ -71,7 +71,7 @@
             "showLineNumbers": false,
             "showMiniMap": false
           },
-          "content": "# MPP_Solar\nThis Dashboard takes avantage of using prom output from mpp_solar with command output from QPGS and QPIGS.\nThis output can be directed to a text file while building the file, then moved to node_exporter folder as a prom file.\n\nDesigned originally for Rich Solar LV6548 and should work for MPP LV6548 and the like. Should also work with other inverters though thresholds should be adjusted for each case based on the models abilities.\nI have created many panels to pick and choose from so you can remove what you do not want.\nAll panels are made as library items, so you can restore any panel that has been removed.\n\nSome of the Array power guages, have a dynamic MAX set according to environment for each. For other inverter models, the multiplier value may need to be changed in the equation which can be adjusted in the dashboard variables found in the \"Dashboard Settings\". This is usually asked for during the dashboard import, though can be adjusted after.\nThe following status information needs to be poled for this dashboard:\n```\nQPGS 1-9 for each controller returns a bulk of the nedded metrics.\nQPIRI for each controller sets some of the guages min and/or max values. (optional)\nQPIGS for each controller returns invertter temperatures, solar pv1 power after MPPT. (optional)\nQPIGS2 for each controlller returns solar pv2 (and maybe pv3 for controllers with 3rd input) power after MPPT. (optional)\n\n```\n\nAdjust your serial ports as needed. \n\n`Example configurations: broken out`\n```\n# cat /etc/mppsolar/mpp_qpgs.conf\n# This pulls a bulk of the metrics used for graphing. (Required)\n[SETUP]\npause=5\n\n[Inverter_2]\nport=/dev/ttyUSB2\nprotocol=PI30max\ncommand=QPGS2\ntag=QPGS2\noutputs=prom\ndev=SCC2\n\n[Inverter_1]\nport=/dev/ttyUSB0\nprotocol=PI30max\ncommand=QPGS1\ntag=QPGS1\noutputs=prom\ndev=SCC1\n```\n```\n # cat /etc/mppsolar/mpp_qpigs.conf\n # This output required for Inverter heatsink temp, and PV1 MPPT charge wattage. (optional)\n[SETUP]\npause=5\n\n[Inverter_2]\nport=/dev/ttyUSB2\nprotocol=PI30max\ncommand=QPIGS\noutputs=prom\ndev=SCC2\n\n[Inverter_1]\nport=/dev/ttyUSB0\nprotocol=PI30max\ncommand=QPIGS\noutputs=prom\ndev=SCC1\n```\n```\n# cat /etc/mppsolar/mpp_qpigs2.conf\n### This config for inverters with more than one PV input, to retrive PV2 MPPT Charge Wattage output. (optional)\n\n[SETUP]\npause=5\n\n[Inverter_2]\nport=/dev/ttyUSB2\nprotocol=PI30max\ncommand=QPIGS2\noutputs=prom\ndev=SCC2\n\n[Inverter_1]\nport=/dev/ttyUSB0\nprotocol=PI30max\ncommand=QPIGS2\noutputs=prom\ndev=SCC1\n```\n```\n# cat /etc/mppsolar/mpp_qpiri.conf\n### This config retrives some of the specs for the controllers to set the gauges MIN/MAX values.  (optional)\n[SETUP]\npause=5\n\n[Inverter_2]\nport=/dev/ttyUSB2\nprotocol=PI30max\ncommand=QPIRI\noutputs=prom\ndev=SCC2\n\n[Inverter_1]\nport=/dev/ttyUSB0\nprotocol=PI30max\ncommand=QPIRI\noutputs=prom\ndev=SCC1\n```\nExecutable in /usr/local/bin/\n```\n# cat /usr/local/bin/mpp-get-data.sh\n#!/bin/ash\ndataFile=\"mppsolar\"\ndataDir=\"/var/lib/node-exporter/mppsolar/\"\n\n\nwhile : ; do\n\n        `/usr/bin/mpp-solar -C /etc/mppsolar/mpp_qpgs.conf > /tmp/${dataFile}.$$` && \\\n        `/usr/bin/mpp-solar -C /etc/mppsolar/mpp_qpigs.conf >> /tmp/${dataFile}.$$` && \\\n        `/usr/bin/mpp-solar -C /etc/mppsolar/mpp_qpigs2.conf >> /tmp/${dataFile}.$$` && \\\n        mv /tmp/${dataFile}.$$ ${dataDir}${dataFile}.prom\n        sleep 5\ndone\n```\n\nCreate a OpenRC, SysV or systemd startup for the executable as pertains to your installation.\n\nFor markdown syntax help: [commonmark.org/help](https://commonmark.org/help/)",
+          "content": "# MPP_Solar\nThis Dashboard takes avantage of using prom output from mpp_solar with command output from QPGS and QPIGS.\nThis output can be directed to a text file while building the file, then moved to node_exporter folder as a prom file.\n\nDesigned originally for Rich Solar LV6548 and should work for MPP LV6548 and the like. Should also work with other inverters though thresholds should be adjusted for each case based on the models abilities.\nI have created many panels to pick and choose from so you can remove what you do not want.\nAll panels are made as library items, so you can restore any panel that has been removed.\n\nSome of the Array power guages, have a dynamic MAX set according to environment for each. For other inverter models, the multiplier value may need to be changed in the equation which can be adjusted in the dashboard variables found in the \"Dashboard Settings\". This is usually asked for during the dashboard import, though can be adjusted after.\nThe following status information needs to be poled for this dashboard:\n```\nQPGS 1-9 for each controller returns a bulk of the nedded metrics.\nQPIRI for each controller sets some of the guages min and/or max values. (optional)\nQPIGS for each controller returns invertter temperatures, solar pv1 power after MPPT. (optional)\nQPIGS2 for each controlller returns solar pv2 (and maybe pv3 for controllers with 3rd input) power after MPPT. (optional)\n\n```\n\nAdjust your serial ports as needed. \n\n`Example configurations: broken out`\n```\n# cat /etc/mppsolar/mpp_qpgs.conf\n# This pulls a bulk of the metrics used for graphing. (Required)\n[SETUP]\npause=5\n\n[Inverter_2]\nport=/dev/ttyUSB2\nprotocol=PI30max\ncommand=QPGS2\ntag=QPGS2\noutputs=prom\ndev=SCC2\n\n[Inverter_1]\nport=/dev/ttyUSB0\nprotocol=PI30max\ncommand=QPGS1\ntag=QPGS1\noutputs=prom\ndev=SCC1\n```\n```\n # cat /etc/mppsolar/mpp_qpigs.conf\n # This output required for Inverter heatsink temp, and PV1 MPPT charge wattage. (optional)\n[SETUP]\npause=5\n\n[Inverter_2]\nport=/dev/ttyUSB2\nprotocol=PI30max\ncommand=QPIGS\noutputs=prom\ndev=SCC2\n\n[Inverter_1]\nport=/dev/ttyUSB0\nprotocol=PI30max\ncommand=QPIGS\noutputs=prom\ndev=SCC1\n```\n```\n# cat /etc/mppsolar/mpp_qpigs2.conf\n### This config for inverters with more than one PV input, to retrive PV2 MPPT Charge Wattage output. (optional)\n\n[SETUP]\npause=5\n\n[Inverter_2]\nport=/dev/ttyUSB2\nprotocol=PI30max\ncommand=QPIGS2\noutputs=prom\ndev=SCC2\n\n[Inverter_1]\nport=/dev/ttyUSB0\nprotocol=PI30max\ncommand=QPIGS2\noutputs=prom\ndev=SCC1\n```\n```\n# cat /etc/mppsolar/mpp_qpiri.conf\n### This config retrives some of the specs for the controllers to set the gauges MIN/MAX values.  (optional)\n[SETUP]\npause=5\n\n[Inverter_2]\nport=/dev/ttyUSB2\nprotocol=PI30max\ncommand=QPIRI\noutputs=prom\ndev=SCC2\n\n[Inverter_1]\nport=/dev/ttyUSB0\nprotocol=PI30max\ncommand=QPIRI\noutputs=prom\ndev=SCC1\n```\nExecutable in /usr/local/bin/\n```\n# cat /usr/local/bin/mpp-get-data.sh\n#!/bin/ash\ndataFile=\"mppsolar\"\ndataDir=\"/var/lib/node-exporter/mppsolar/\"\n\n\nwhile : ; do\n\n        `/usr/bin/mpp-solar -C /etc/mppsolar/mpp_qpgs.conf > /tmp/${dataFile}.$$` && \\\n        `/usr/bin/mpp-solar -C /etc/mppsolar/mpp_qpiri.conf > /tmp/${dataFile}.$$` && \\\n        `/usr/bin/mpp-solar -C /etc/mppsolar/mpp_qpigs.conf >> /tmp/${dataFile}.$$` && \\\n        `/usr/bin/mpp-solar -C /etc/mppsolar/mpp_qpigs2.conf >> /tmp/${dataFile}.$$` && \\\n        mv /tmp/${dataFile}.$$ ${dataDir}${dataFile}.prom\n        sleep 5\ndone\n```\n\nCreate a OpenRC, SysV or systemd startup for the executable as pertains to your installation.\n\nFor markdown syntax help: [commonmark.org/help](https://commonmark.org/help/)",
           "mode": "markdown"
         },
         "pluginVersion": "10.3.3",
@@ -3878,7 +3878,7 @@
   "liveNow": false,
   "panels": [
     {
-      "collapsed": true,
+      "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -3886,24 +3886,22 @@
         "y": 0
       },
       "id": 45,
-      "panels": [
-        {
-          "gridPos": {
-            "h": 32,
-            "w": 24,
-            "x": 0,
-            "y": 1
-          },
-          "id": 75,
-          "libraryPanel": {
-            "name": "Solar Config",
-            "uid": "a179b231-2e29-445c-a6a7-5f0f04533bf3"
-          },
-          "title": "Solar Config"
-        }
-      ],
+      "panels": [],
       "title": "About configuration",
       "type": "row"
+    },
+    {
+      "gridPos": {
+        "h": 32,
+        "w": 24,
+        "x": 0,
+        "y": 1
+      },
+      "id": 75,
+      "libraryPanel": {
+        "uid": "a179b231-2e29-445c-a6a7-5f0f04533bf3",
+        "name": "Solar Config"
+      }
     },
     {
       "collapsed": false,
@@ -3911,7 +3909,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 1
+        "y": 33
       },
       "id": 50,
       "panels": [],
@@ -3923,7 +3921,7 @@
         "h": 4,
         "w": 4,
         "x": 0,
-        "y": 2
+        "y": 34
       },
       "id": 8,
       "libraryPanel": {
@@ -3936,7 +3934,7 @@
         "h": 4,
         "w": 3,
         "x": 4,
-        "y": 2
+        "y": 34
       },
       "id": 4,
       "libraryPanel": {
@@ -3949,7 +3947,7 @@
         "h": 4,
         "w": 4,
         "x": 7,
-        "y": 2
+        "y": 34
       },
       "id": 2,
       "libraryPanel": {
@@ -3962,7 +3960,7 @@
         "h": 4,
         "w": 4,
         "x": 11,
-        "y": 2
+        "y": 34
       },
       "id": 6,
       "libraryPanel": {
@@ -3975,7 +3973,7 @@
         "h": 4,
         "w": 4,
         "x": 15,
-        "y": 2
+        "y": 34
       },
       "id": 14,
       "libraryPanel": {
@@ -3988,7 +3986,7 @@
         "h": 4,
         "w": 5,
         "x": 19,
-        "y": 2
+        "y": 34
       },
       "id": 12,
       "libraryPanel": {
@@ -4001,7 +3999,7 @@
         "h": 5,
         "w": 3,
         "x": 0,
-        "y": 6
+        "y": 38
       },
       "id": 10,
       "libraryPanel": {
@@ -4014,7 +4012,7 @@
         "h": 5,
         "w": 3,
         "x": 3,
-        "y": 6
+        "y": 38
       },
       "id": 16,
       "libraryPanel": {
@@ -4027,7 +4025,7 @@
         "h": 5,
         "w": 3,
         "x": 6,
-        "y": 6
+        "y": 38
       },
       "id": 18,
       "libraryPanel": {
@@ -4040,7 +4038,7 @@
         "h": 5,
         "w": 3,
         "x": 9,
-        "y": 6
+        "y": 38
       },
       "id": 20,
       "libraryPanel": {
@@ -4053,7 +4051,7 @@
         "h": 13,
         "w": 6,
         "x": 12,
-        "y": 6
+        "y": 38
       },
       "id": 67,
       "libraryPanel": {
@@ -4066,7 +4064,7 @@
         "h": 13,
         "w": 6,
         "x": 18,
-        "y": 6
+        "y": 38
       },
       "id": 40,
       "libraryPanel": {
@@ -4079,7 +4077,7 @@
         "h": 8,
         "w": 6,
         "x": 0,
-        "y": 11
+        "y": 43
       },
       "id": 36,
       "libraryPanel": {
@@ -4092,7 +4090,7 @@
         "h": 8,
         "w": 6,
         "x": 6,
-        "y": 11
+        "y": 43
       },
       "id": 65,
       "libraryPanel": {
@@ -4105,7 +4103,7 @@
         "h": 8,
         "w": 5,
         "x": 0,
-        "y": 19
+        "y": 51
       },
       "id": 48,
       "libraryPanel": {
@@ -4118,7 +4116,7 @@
         "h": 8,
         "w": 3,
         "x": 5,
-        "y": 19
+        "y": 51
       },
       "id": 22,
       "libraryPanel": {
@@ -4131,7 +4129,7 @@
         "h": 8,
         "w": 4,
         "x": 8,
-        "y": 19
+        "y": 51
       },
       "id": 24,
       "libraryPanel": {
@@ -4144,7 +4142,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 19
+        "y": 51
       },
       "id": 42,
       "libraryPanel": {
@@ -4158,7 +4156,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 27
+        "y": 59
       },
       "id": 47,
       "panels": [],
@@ -4170,7 +4168,7 @@
         "h": 11,
         "w": 12,
         "x": 0,
-        "y": 28
+        "y": 60
       },
       "id": 56,
       "libraryPanel": {
@@ -4183,7 +4181,7 @@
         "h": 11,
         "w": 12,
         "x": 12,
-        "y": 28
+        "y": 60
       },
       "id": 71,
       "libraryPanel": {
@@ -4196,7 +4194,7 @@
         "h": 11,
         "w": 12,
         "x": 0,
-        "y": 39
+        "y": 71
       },
       "id": 32,
       "libraryPanel": {
@@ -4209,7 +4207,7 @@
         "h": 11,
         "w": 12,
         "x": 12,
-        "y": 39
+        "y": 71
       },
       "id": 30,
       "libraryPanel": {
@@ -4222,7 +4220,7 @@
         "h": 11,
         "w": 12,
         "x": 0,
-        "y": 50
+        "y": 82
       },
       "id": 28,
       "libraryPanel": {
@@ -4235,7 +4233,7 @@
         "h": 11,
         "w": 12,
         "x": 12,
-        "y": 50
+        "y": 82
       },
       "id": 73,
       "libraryPanel": {
@@ -4248,7 +4246,7 @@
         "h": 12,
         "w": 24,
         "x": 0,
-        "y": 61
+        "y": 93
       },
       "id": 69,
       "libraryPanel": {
@@ -4261,7 +4259,7 @@
         "h": 15,
         "w": 24,
         "x": 0,
-        "y": 73
+        "y": 105
       },
       "id": 34,
       "libraryPanel": {
@@ -4275,7 +4273,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 88
+        "y": 120
       },
       "id": 52,
       "panels": [],
@@ -4287,7 +4285,7 @@
         "h": 13,
         "w": 12,
         "x": 0,
-        "y": 89
+        "y": 121
       },
       "id": 58,
       "libraryPanel": {
@@ -4300,7 +4298,7 @@
         "h": 13,
         "w": 12,
         "x": 12,
-        "y": 89
+        "y": 121
       },
       "id": 59,
       "libraryPanel": {
@@ -4313,7 +4311,7 @@
         "h": 20,
         "w": 24,
         "x": 0,
-        "y": 102
+        "y": 134
       },
       "id": 43,
       "libraryPanel": {
@@ -4462,6 +4460,6 @@
   "timezone": "browser",
   "title": "mpp_solar",
   "uid": "EOSZe9jVz",
-  "version": 199,
+  "version": 200,
   "weekStart": ""
 }
