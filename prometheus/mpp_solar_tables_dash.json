@@ -3134,6 +3134,7 @@
               }
             },
             "mappings": [],
+            "noValue": "GPIGS and QPIGS2 not available.",
             "thresholds": {
               "mode": "absolute",
               "steps": [
@@ -3169,6 +3170,33 @@
                       10
                     ],
                     "fill": "dash"
+                  }
+                }
+              ]
+            },
+            {
+              "__systemRef": "hideSeriesFrom",
+              "matcher": {
+                "id": "byNames",
+                "options": {
+                  "mode": "exclude",
+                  "names": [
+                    "Inverter_2 - pv2",
+                    "Inverter_1 - pv2",
+                    "Inverter_2 - pv1",
+                    "Inverter_1 - pv1"
+                  ],
+                  "prefix": "All except:",
+                  "readOnly": true
+                }
+              },
+              "properties": [
+                {
+                  "id": "custom.hideFrom",
+                  "value": {
+                    "legend": false,
+                    "tooltip": false,
+                    "viz": true
                   }
                 }
               ]
@@ -3737,6 +3765,18 @@
       "tooltip": "mpp-solar github page",
       "type": "link",
       "url": "https://github.com/jblance/mpp-solar"
+    },
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": false,
+      "keepTime": false,
+      "tags": [],
+      "targetBlank": true,
+      "title": "JamBox-IT",
+      "tooltip": "JamBox-IT github",
+      "type": "link",
+      "url": "https://github.com/JamBox-IT"
     }
   ],
   "liveNow": false,
@@ -4221,6 +4261,6 @@
   "timezone": "browser",
   "title": "mpp_solar-v2",
   "uid": "IztLC16Vz",
-  "version": 37,
+  "version": 42,
   "weekStart": ""
 }
