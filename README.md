@@ -14,8 +14,8 @@ Dashboards have some dynamic programed Total gauges that adjust with controller 
 Total gauge for "Array power by inverter" automaticly adjusts it maximum value by how many inverters report back voltage on each array input.
 Total gauge for "Battery charge current" adjusts its minimum and maximum capacity by by how many controllers report in use.
 Variable in "Dashboard Settings" to set PV array maximum value for gauges.
-- Supports multipal controller configuration.
-- Supports multipal installations of systems.
+- Supports multiple controller configurations.
+- Supports multiple installations of systems.
 
 TODO: Breakout or organize to show split phase.
 
