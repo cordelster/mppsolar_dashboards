@@ -13,9 +13,10 @@ All panels are part of a library, so any removed panel can be restored, or easil
 Dashboards have some dynamic programed Total gauges that adjust with controller configuration. 
 Total gauge for "Array power by inverter" automaticly adjusts it maximum value by how many inverters report back voltage on each array input.
 Total gauge for "Battery charge current" adjusts its minimum and maximum capacity by by how many controllers report in use.
-Total gauge for Total "AC power watts" output adjusts its maximum by how many inverters report is_on. This allows for adding inverters/controllers using the  same model without the need to adjust the dashboard.
+Variable in "Dashboard Settings" to set PV array maximum value for gauges.
+- Supports multipal controller configuration.
+- Supports multipal installations of systems.
 
-TODO:
-- Create variables in Dashboard to adjust values depending on inverter. Reduce the need to adjust equations directly.
+TODO: Breakout or organize to show split phase.
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/L3L0V38OP)

@@ -31,6 +31,27 @@
           }
         ]
       }
+    },
+    {
+      "name": "VAR_AC_OUTPUT_ACTIVE_POWER",
+      "type": "constant",
+      "label": "ac_output_active_power",
+      "value": "6500",
+      "description": ""
+    },
+    {
+      "name": "VAR_MAX_PV_INPUT_POWER",
+      "type": "constant",
+      "label": "max_pv_input_power",
+      "value": "4000",
+      "description": ""
+    },
+    {
+      "name": "VAR_BATTERY_VOLTAGE_MAX_RATING",
+      "type": "constant",
+      "label": "battery_voltage_max_rating",
+      "value": "58",
+      "description": ""
     }
   ],
   "__elements": {
@@ -50,7 +71,7 @@
             "showLineNumbers": false,
             "showMiniMap": false
           },
-          "content": "# MPP_Solar\nThis Dashboard takes avantage of using prom output from mpp_solar with command output from QPGS and QPIGS.\nThis output can be directed to a text file while building the file, then moved to node_exporter folder as a prom file.\n\nDesigned originally for Rich Solar 6548 and should work for MPP LV6548 and the like. Should also work with other inverters though thresholds should be adjusted for each case based on the models abilities.\nI have created many panels to pick and choose from so you can remove what you do not want.\nAll panels are made as library items, so you can restore any panel that has been removed.\n\nSome of the power guages, have a dynimic \"Total\" MAX set according to environment for each. For other inverter models, the multiplier may need to be changed in the equation, as well as the first set of gauge maximum values. The overides should not be changed else it breaks.\n\nAdjust your serial ports as needed. \n\n`Example configurations:`\n```\n# cat /etc/mppsolar/mpp_qpgs.conf\n[SETUP]\npause=5\n\n[Inverter_2]\nport=/dev/ttyUSB2\nprotocol=PI30max\ncommand=QPGS2\ntag=QPGS2\noutputs=prom\ndev=SCC2\n\n[Inverter_1]\nport=/dev/ttyUSB0\nprotocol=PI30max\ncommand=QPGS1\ntag=QPGS1\noutputs=prom\ndev=SCC1\n```\n\n\n```\n # cat /etc/mppsolar/mpp_qpigs.conf\n # This output required for Inverter heatsink temp, and PV1 charge wattage.\n[SETUP]\npause=5\n\n[Inverter_2]\nport=/dev/ttyUSB2\nprotocol=PI30max\ncommand=QPIGS\noutputs=prom\ndev=SCC2\n\n[Inverter_1]\nport=/dev/ttyUSB0\nprotocol=PI30max\ncommand=QPIGS\noutputs=prom\ndev=SCC1\n```\n```\n# cat /etc/mppsolar/mpp_qpigs2.conf\n### This config for inverters with more than one PV input, to retrive PV2 Charge Wattage output.\n### Thoogh not a requirement with this dashboard.\n[SETUP]\npause=5\n\n[Inverter_2]\nport=/dev/ttyUSB2\nprotocol=PI30max\ncommand=QPIGS2\noutputs=prom\ndev=SCC2\n\n[Inverter_1]\nport=/dev/ttyUSB0\nprotocol=PI30max\ncommand=QPIGS2\noutputs=prom\ndev=SCC1\n```\nExecutable in /usr/local/bin/\n```\n# cat /usr/local/bin/mpp-get-data.sh\n#!/bin/ash\ndataFile=\"mppsolar\"\ndataDir=\"/var/lib/node-exporter/mppsolar/\"\n\ncheckpath -d \"$dataDir\" -m 755 -o node_exporter:node_exporter\n\nwhile : ; do\n\n        `/usr/bin/mpp-solar -C /etc/mppsolar/mpp_qpgs.conf > ${dataDir}${dataFile}.$$` && \\\n        `/usr/bin/mpp-solar -C /etc/mppsolar/mpp_qpigs.conf >> ${dataDir}${dataFile}.$$` && \\\n        `/usr/bin/mpp-solar -C /etc/mppsolar/mpp_qpigs2.conf >> ${dataDir}${dataFile}.$$` && \\\n        mv ${dataDir}${dataFile}.$$ ${dataDir}${dataFile}.prom\n        sleep 5\ndone\n```\n\nCreate a OpenRC, SysV or systemd startup for the executable as pertains to your installation.\n\nFor markdown syntax help: [commonmark.org/help](https://commonmark.org/help/)",
+          "content": "# MPP_Solar\nThis Dashboard takes avantage of using prom output from mpp_solar with command output from QPGS and QPIGS.\nThis output can be directed to a text file while building the file, then moved to node_exporter folder as a prom file.\n\nDesigned originally for Rich Solar LV6548 and should work for MPP LV6548 and the like. Should also work with other inverters though thresholds should be adjusted for each case based on the models abilities.\nI have created many panels to pick and choose from so you can remove what you do not want.\nAll panels are made as library items, so you can restore any panel that has been removed.\n\nSome of the Array power guages, have a dynamic MAX set according to environment for each. For other inverter models, the multiplier value may need to be changed in the equation which can be adjusted in the dashboard variables found in the \"Dashboard Settings\". This is usually asked for during the dashboard import, though can be adjusted after.\nThe following status information needs to be poled for this dashboard:\n```\nQPGS 1-9 for each controller returns a bulk of the nedded metrics.\nQPIRI for each controller sets some of the guages min and/or max values. (optional)\nQPIGS for each controller returns invertter temperatures, solar pv1 power after MPPT. (optional)\nQPIGS2 for each controlller returns solar pv2 (and maybe pv3 for controllers with 3rd input) power after MPPT. (optional)\n\n```\n\nAdjust your serial ports as needed. \n\n`Example configurations: broken out`\n```\n# cat /etc/mppsolar/mpp_qpgs.conf\n# This pulls a bulk of the metrics used for graphing. (Required)\n[SETUP]\npause=5\n\n[Inverter_2]\nport=/dev/ttyUSB2\nprotocol=PI30max\ncommand=QPGS2\ntag=QPGS2\noutputs=prom\ndev=SCC2\n\n[Inverter_1]\nport=/dev/ttyUSB0\nprotocol=PI30max\ncommand=QPGS1\ntag=QPGS1\noutputs=prom\ndev=SCC1\n```\n```\n # cat /etc/mppsolar/mpp_qpigs.conf\n # This output required for Inverter heatsink temp, and PV1 MPPT charge wattage. (optional)\n[SETUP]\npause=5\n\n[Inverter_2]\nport=/dev/ttyUSB2\nprotocol=PI30max\ncommand=QPIGS\noutputs=prom\ndev=SCC2\n\n[Inverter_1]\nport=/dev/ttyUSB0\nprotocol=PI30max\ncommand=QPIGS\noutputs=prom\ndev=SCC1\n```\n```\n# cat /etc/mppsolar/mpp_qpigs2.conf\n### This config for inverters with more than one PV input, to retrive PV2 MPPT Charge Wattage output. (optional)\n\n[SETUP]\npause=5\n\n[Inverter_2]\nport=/dev/ttyUSB2\nprotocol=PI30max\ncommand=QPIGS2\noutputs=prom\ndev=SCC2\n\n[Inverter_1]\nport=/dev/ttyUSB0\nprotocol=PI30max\ncommand=QPIGS2\noutputs=prom\ndev=SCC1\n```\n```\n# cat /etc/mppsolar/mpp_qpiri.conf\n### This config retrives some of the specs for the controllers to set the gauges MIN/MAX values.  (optional)\n[SETUP]\npause=5\n\n[Inverter_2]\nport=/dev/ttyUSB2\nprotocol=PI30max\ncommand=QPIRI\noutputs=prom\ndev=SCC2\n\n[Inverter_1]\nport=/dev/ttyUSB0\nprotocol=PI30max\ncommand=QPIRI\noutputs=prom\ndev=SCC1\n```\nExecutable in /usr/local/bin/\n```\n# cat /usr/local/bin/mpp-get-data.sh\n#!/bin/ash\ndataFile=\"mppsolar\"\ndataDir=\"/var/lib/node-exporter/mppsolar/\"\n\n\nwhile : ; do\n\n        `/usr/bin/mpp-solar -C /etc/mppsolar/mpp_qpgs.conf > /tmp/${dataFile}.$$` && \\\n        `/usr/bin/mpp-solar -C /etc/mppsolar/mpp_qpigs.conf >> /tmp/${dataFile}.$$` && \\\n        `/usr/bin/mpp-solar -C /etc/mppsolar/mpp_qpigs2.conf >> /tmp/${dataFile}.$$` && \\\n        mv /tmp/${dataFile}.$$ ${dataDir}${dataFile}.prom\n        sleep 5\ndone\n```\n\nCreate a OpenRC, SysV or systemd startup for the executable as pertains to your installation.\n\nFor markdown syntax help: [commonmark.org/help](https://commonmark.org/help/)",
           "mode": "markdown"
         },
         "pluginVersion": "10.3.3",
@@ -64,6 +85,7 @@
           }
         ],
         "title": "Solar Config",
+        "transparent": true,
         "type": "text"
       }
     },
@@ -1054,7 +1076,7 @@
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "description": "Total is dynamic by what units return \"is_switched_on\" and there is one equation each for MAX and MIN values.",
+        "description": "",
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -1142,11 +1164,11 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "PBFA97CFB590B2093"
+              "uid": "${datasource}"
             },
             "editorMode": "code",
             "exemplar": false,
-            "expr": "mpp_solar_battery_charging_current{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS\"} - mpp_solar_battery_discharge_current{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS\"}",
+            "expr": "mpp_solar_battery_charging_current{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS|QPIRI\"} - mpp_solar_battery_discharge_current{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS|QPIRI\"}",
             "hide": false,
             "instant": true,
             "legendFormat": "{{inverter}}",
@@ -1156,11 +1178,11 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "PBFA97CFB590B2093"
+              "uid": "${datasource}"
             },
             "editorMode": "code",
             "exemplar": false,
-            "expr": "sum(mpp_solar_battery_charging_current{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS\"} - mpp_solar_battery_discharge_current{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS\"})",
+            "expr": "sum(mpp_solar_battery_charging_current{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS|QPIRI\"} - mpp_solar_battery_discharge_current{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS|QPIRI\"})",
             "instant": true,
             "legendFormat": "Total",
             "range": false,
@@ -1169,10 +1191,10 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "WIyb0ajVk"
+              "uid": "${datasource}"
             },
             "editorMode": "code",
-            "expr": "sum(mpp_solar_is_switched_on) * 120",
+            "expr": "sum(mpp_solar_max_charger_range{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS|QPIRI\"})",
             "hide": false,
             "instant": false,
             "legendFormat": "__auto",
@@ -1182,15 +1204,41 @@
           {
             "datasource": {
               "type": "prometheus",
-              "uid": "WIyb0ajVk"
+              "uid": "${datasource}"
             },
             "editorMode": "code",
-            "expr": "sum(mpp_solar_is_switched_on) * -120",
+            "expr": "sum(mpp_solar_max_charger_range{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS|QPIRI\"}) * -1",
             "hide": false,
             "instant": false,
             "legendFormat": "__auto",
             "range": true,
             "refId": "D"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "expr": "scalar(mpp_solar_max_charger_range{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS|QPIRI\"})",
+            "hide": false,
+            "instant": false,
+            "legendFormat": "__auto",
+            "range": true,
+            "refId": "E"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "expr": "scalar(mpp_solar_max_charger_range{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS|QPIRI\"}) * -1",
+            "hide": false,
+            "instant": false,
+            "legendFormat": "__auto",
+            "range": true,
+            "refId": "F"
           }
         ],
         "title": "Battery Charge Current",
@@ -1205,7 +1253,7 @@
               "configRefId": "C",
               "mappings": [
                 {
-                  "fieldName": "sum(mpp_solar_is_switched_on) * 120",
+                  "fieldName": "sum(mpp_solar_max_charger_range{instance=\"192.168.120.19:9100\",job=\"node\",cmd!~\"QPIGS|QPIRI\"})",
                   "handlerKey": "max"
                 }
               ]
@@ -1221,7 +1269,39 @@
               "configRefId": "D",
               "mappings": [
                 {
-                  "fieldName": "sum(mpp_solar_is_switched_on) * -120",
+                  "fieldName": "sum(mpp_solar_max_charger_range{instance=\"192.168.120.19:9100\",job=\"node\",cmd!~\"QPIGS|QPIRI\"}) * -1",
+                  "handlerKey": "min"
+                }
+              ]
+            }
+          },
+          {
+            "id": "configFromData",
+            "options": {
+              "applyTo": {
+                "id": "byFrameRefID",
+                "options": "A"
+              },
+              "configRefId": "E",
+              "mappings": [
+                {
+                  "fieldName": "scalar(mpp_solar_max_charger_range{instance=\"192.168.120.19:9100\",job=\"node\",cmd!~\"QPIGS|QPIRI\"})",
+                  "handlerKey": "max"
+                }
+              ]
+            }
+          },
+          {
+            "id": "configFromData",
+            "options": {
+              "applyTo": {
+                "id": "byFrameRefID",
+                "options": "A"
+              },
+              "configRefId": "F",
+              "mappings": [
+                {
+                  "fieldName": "scalar(mpp_solar_max_charger_range{instance=\"192.168.120.19:9100\",job=\"node\",cmd!~\"QPIGS|QPIRI\"}) * -1",
                   "handlerKey": "min"
                 }
               ]
@@ -1245,7 +1325,7 @@
           "defaults": {
             "decimals": 1,
             "mappings": [],
-            "max": 6600,
+            "max": 6500,
             "min": 0,
             "thresholds": {
               "mode": "percentage",
@@ -1334,7 +1414,7 @@
             },
             "editorMode": "code",
             "exemplar": false,
-            "expr": "mpp_solar_ac_output_active_power{instance=\"$node\",job=\"$job\",cmd!=\"QPIGS\"}",
+            "expr": "mpp_solar_ac_output_active_power{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS|QPIRI\"}",
             "instant": true,
             "interval": "",
             "legendFormat": "{{inverter}} AC Watts",
@@ -1348,7 +1428,7 @@
             },
             "editorMode": "code",
             "exemplar": false,
-            "expr": "sum(mpp_solar_ac_output_active_power{instance=\"$node\",job=\"$job\",cmd!=\"QPIGS\"})",
+            "expr": "sum(mpp_solar_ac_output_active_power{instance=\"$node\",job=\"$job\",cmd!~\"QPIGS|QPIRI\"})",
             "instant": true,
             "interval": "",
             "legendFormat": "Total",
@@ -1361,12 +1441,30 @@
               "uid": "${datasource}"
             },
             "editorMode": "code",
-            "expr": "count (mpp_solar_ac_output_active_power{instance=\"$node\",job=\"$job\",cmd!=\"QPIGS\"}) * 6500",
+            "expr": "sum (mpp_solar_ac_output_active_power{instance=\"$node\",job=\"$job\",cmd=\"QPIRI\"})",
             "hide": false,
             "instant": false,
             "legendFormat": "__auto",
             "range": true,
             "refId": "C"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "disableTextWrap": false,
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "scalar(mpp_solar_ac_output_active_power{instance=\"$node\", job=\"$job\", cmd=\"QPIRI\"})",
+            "fullMetaSearch": false,
+            "hide": false,
+            "includeNullMetadata": true,
+            "instant": false,
+            "legendFormat": "__auto",
+            "range": true,
+            "refId": "D",
+            "useBackend": false
           }
         ],
         "title": "AC Power Watts",
@@ -1381,7 +1479,31 @@
               "configRefId": "C",
               "mappings": [
                 {
-                  "fieldName": "count (mpp_solar_ac_output_active_power{instance=\"192.168.120.19:9100\",job=\"node\",cmd!=\"QPIGS\"}) * 6500",
+                  "fieldName": "sum (mpp_solar_ac_output_active_power{instance=\"192.168.120.19:9100\",job=\"node\",cmd!~\"QPIGS|QPGS\"})",
+                  "handlerKey": "max"
+                },
+                {
+                  "fieldName": "sum (mpp_solar_ac_output_active_power{instance=\"192.168.120.19:9100\",job=\"node\",cmd=\"QPIRI\"})",
+                  "handlerKey": "max"
+                }
+              ]
+            }
+          },
+          {
+            "id": "configFromData",
+            "options": {
+              "applyTo": {
+                "id": "byFrameRefID",
+                "options": "A"
+              },
+              "configRefId": "D",
+              "mappings": [
+                {
+                  "fieldName": "{__name__=\"mpp_solar_ac_output_active_power\", cmd=\"QPIRI\", device=\"None\", instance=\"192.168.120.19:9100\", inverter=\"Inverter_1\", job=\"node\"}",
+                  "handlerKey": "max"
+                },
+                {
+                  "fieldName": "scalar(mpp_solar_ac_output_active_power{instance=\"192.168.120.19:9100\", job=\"node\", cmd=\"QPIRI\"})",
                   "handlerKey": "max"
                 }
               ]
@@ -1407,7 +1529,6 @@
               "mode": "thresholds"
             },
             "mappings": [],
-            "max": 4010,
             "min": 0,
             "thresholds": {
               "mode": "percentage",
@@ -1467,6 +1588,17 @@
             "legendFormat": "{{inverter}} - {{__name__}}",
             "range": true,
             "refId": "C"
+          },
+          {
+            "datasource": {
+              "name": "Expression",
+              "type": "__expr__",
+              "uid": "__expr__"
+            },
+            "expression": "$max_pv_input_power",
+            "hide": false,
+            "refId": "A",
+            "type": "math"
           }
         ],
         "title": "Array Wattage",
@@ -1476,6 +1608,18 @@
             "options": {
               "regex": "/mpp_solar_([\\S+]+.)_charging_power/",
               "renamePattern": "$1"
+            }
+          },
+          {
+            "id": "configFromData",
+            "options": {
+              "configRefId": "A",
+              "mappings": [
+                {
+                  "fieldName": "A",
+                  "handlerKey": "max"
+                }
+              ]
             }
           }
         ],
@@ -1491,7 +1635,7 @@
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "description": "Array power by Inverter, Total is dynamic according to weather there is any voltage detected on each array. The multiplier should be set to the maximum wattage each input is allowed for the model of controller (default is 4000 watts).",
+        "description": "Array power by Inverter, Total is dynamic according to weather there is any voltage detected on each array. The multiplier should be set to the maximum wattage each input is allowed for the model of controller in use (default is 4000 watts). This is set in the \"Dashboard Settings\" menu in the \"Variables\" tab: max_pv_input_power",
         "fieldConfig": {
           "defaults": {
             "mappings": [],
@@ -1617,7 +1761,7 @@
               "uid": "${datasource}"
             },
             "editorMode": "code",
-            "expr": "count ({__name__=~\"mpp_solar_.*_input_voltage\",instance=\"$node\", job=\"$job\", cmd!=\"QPIGS\", cmd!=\"QPIGS2\"}  >= 0.1) * 4000",
+            "expr": "count ({__name__=~\"mpp_solar_.*_input_voltage\",instance=\"$node\", job=\"$job\", cmd!~\"QPIGS|QPIGS2\"}  >= 0.1) * $max_pv_input_power",
             "hide": false,
             "instant": false,
             "legendFormat": "__auto",
@@ -1743,31 +1887,30 @@
           "defaults": {
             "decimals": 1,
             "mappings": [],
-            "max": 60,
             "min": 48,
             "thresholds": {
-              "mode": "absolute",
+              "mode": "percentage",
               "steps": [
                 {
                   "color": "dark-red",
                   "value": null
                 },
                 {
-                  "color": "dark-green",
-                  "value": 50
+                  "color": "dark-yellow",
+                  "value": 20
                 },
                 {
-                  "color": "dark-yellow",
-                  "value": 54
+                  "color": "dark-green",
+                  "value": 30
                 },
                 {
                   "color": "red",
-                  "value": 58
+                  "value": 70
                 }
               ]
             },
             "unit": "volt",
-            "unitScale": true
+            "unitScale": false
           },
           "overrides": []
         },
@@ -1794,17 +1937,87 @@
               "type": "prometheus",
               "uid": "${datasource}"
             },
+            "disableTextWrap": false,
             "editorMode": "code",
             "exemplar": false,
-            "expr": "mpp_solar_battery_voltage{instance=\"$node\", job=\"$job\",cmd!=\"QPIGS\"}",
+            "expr": "mpp_solar_battery_voltage{instance=\"$node\", job=\"$job\", cmd!~\"QPIGS|QPIRI\"}",
+            "format": "time_series",
+            "fullMetaSearch": false,
+            "hide": false,
+            "includeNullMetadata": true,
             "instant": true,
             "interval": "",
             "legendFormat": "{{inverter}}",
             "range": false,
-            "refId": "A"
+            "refId": "A",
+            "useBackend": false
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "(mpp_solar_battery_voltage{instance=\"$node\", job=\"$job\",cmd=\"QPIRI\"}) * 1.20834",
+            "format": "table",
+            "hide": false,
+            "instant": true,
+            "legendFormat": "__auto",
+            "range": false,
+            "refId": "B"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "editorMode": "code",
+            "exemplar": false,
+            "expr": "(mpp_solar_battery_voltage{instance=\"$node\", job=\"$job\",cmd=\"QPIRI\"}) * 0.98",
+            "format": "table",
+            "hide": false,
+            "instant": true,
+            "legendFormat": "__auto",
+            "range": false,
+            "refId": "C"
           }
         ],
         "title": "Battery Voltage ",
+        "transformations": [
+          {
+            "id": "configFromData",
+            "options": {
+              "applyTo": {
+                "id": "byFrameRefID",
+                "options": "A"
+              },
+              "configRefId": "B",
+              "mappings": [
+                {
+                  "fieldName": "Value #B",
+                  "handlerKey": "max"
+                }
+              ]
+            }
+          },
+          {
+            "id": "configFromData",
+            "options": {
+              "applyTo": {
+                "id": "byFrameRefID",
+                "options": "A"
+              },
+              "configRefId": "C",
+              "mappings": [
+                {
+                  "fieldName": "Value #C",
+                  "handlerKey": "min"
+                }
+              ]
+            }
+          }
+        ],
         "type": "gauge"
       }
     },
@@ -1954,14 +2167,18 @@
               "type": "prometheus",
               "uid": "${datasource}"
             },
-            "editorMode": "code",
+            "disableTextWrap": false,
+            "editorMode": "builder",
             "exemplar": false,
-            "expr": "mpp_solar_ac_input_voltage{instance=\"$node\", job=\"$job\"}",
+            "expr": "mpp_solar_ac_input_voltage{instance=\"$node\", job=\"$job\", cmd!=\"QPIRI\"}",
+            "fullMetaSearch": false,
+            "includeNullMetadata": true,
             "instant": true,
             "interval": "",
             "legendFormat": "{{inverter}} Grid Volts",
             "range": false,
-            "refId": "A"
+            "refId": "A",
+            "useBackend": false
           }
         ],
         "title": "Grid Voltage",
@@ -2084,7 +2301,7 @@
               "uid": "${datasource}"
             },
             "editorMode": "code",
-            "expr": "mpp_solar_ac_output_active_power{instance=\"$node\", job=\"$job\",cmd!~\"QPIGS|QPIGS2\"}",
+            "expr": "mpp_solar_ac_output_active_power{instance=\"$node\", job=\"$job\",cmd!~\"QPIGS|QPIRI\"}",
             "interval": "",
             "legendFormat": "{{inverter}} AC Watts",
             "range": true,
@@ -2096,7 +2313,7 @@
               "uid": "${datasource}"
             },
             "editorMode": "code",
-            "expr": "mpp_solar_ac_output_active_power{instance=\"$node\", job=\"$job\",cmd!~\"QPIGS|QPIGS2\"} offset 24h",
+            "expr": "mpp_solar_ac_output_active_power{instance=\"$node\", job=\"$job\",cmd!~\"QPIGS|QPIRI\"} offset 24h",
             "hide": false,
             "interval": "",
             "legendFormat": "{{inverter}} AC Watts Yesterday",
@@ -2684,7 +2901,7 @@
               "uid": "${datasource}"
             },
             "editorMode": "code",
-            "expr": "mpp_solar_battery_voltage{instance=\"$node\", job=\"$job\", cmd!~\"QPIGS|QPIGS2\"}",
+            "expr": "mpp_solar_battery_voltage{instance=\"$node\", job=\"$job\", cmd!~\"QPIGS|QPIRI\"}",
             "interval": "",
             "legendFormat": "{{inverter}} Battery Voltage",
             "range": true,
@@ -2696,7 +2913,7 @@
               "uid": "${datasource}"
             },
             "editorMode": "code",
-            "expr": "mpp_solar_battery_voltage{instance=\"$node\", job=\"$job\", cmd!~\"QPIGS|QPIGS2\"} offset 24h",
+            "expr": "mpp_solar_battery_voltage{instance=\"$node\", job=\"$job\", cmd!~\"QPIGS|QPIRI\"} offset 24h",
             "hide": false,
             "interval": "",
             "legendFormat": "{{inverter}} Battery Voltage Yesterday",
@@ -3255,7 +3472,7 @@
               "uid": "${datasource}"
             },
             "editorMode": "code",
-            "expr": "{__name__=~\"mpp_solar_.+_input_current\",cmd!~\"QPIGS|QPIGS2\"}",
+            "expr": "{__name__=~\"mpp_solar_.+_input_current\",cmd!~\"QPIRI|QPIGS|QPIGS2\",instance=\"$node\", job=\"$job\"}",
             "legendFormat": "{{inverter}} - {{__name__}}",
             "range": true,
             "refId": "A"
@@ -3367,7 +3584,7 @@
               "uid": "${datasource}"
             },
             "editorMode": "code",
-            "expr": "{__name__=~\"mpp_solar_.+_input_voltage\",cmd!~\"QPIGS|QPIGS2\"}",
+            "expr": "{__name__=~\"mpp_solar_.+_input_voltage\",cmd!~\"QPIRI|QPIGS|QPIGS2\",instance=\"$node\", job=\"$job\"}",
             "legendFormat": "{{inverter}} - {{__name__}}",
             "range": true,
             "refId": "A"
@@ -3510,7 +3727,7 @@
               "uid": "WIyb0ajVk"
             },
             "editorMode": "code",
-            "expr": "mpp_solar_pv1_input_current{cmd!~\"QPIGS|QPIGS2\"} * mpp_solar_pv1_input_voltage{cmd!~\"QPIGS|QPIGS2\"}",
+            "expr": "mpp_solar_pv1_input_current{cmd!~\"QPIGS|QPIGS2\",instance=\"$node\", job=\"$job\"} * mpp_solar_pv1_input_voltage{cmd!~\"QPIGS|QPIGS2\",instance=\"$node\", job=\"$job\"}",
             "legendFormat": "{{inverter}} PV1",
             "range": true,
             "refId": "A"
@@ -3521,7 +3738,7 @@
               "uid": "WIyb0ajVk"
             },
             "editorMode": "code",
-            "expr": "mpp_solar_pv2_input_current{cmd!~\"QPIGS|QPIGS2\"} * mpp_solar_pv2_input_voltage{cmd!~\"QPIGS|QPIGS2\"}",
+            "expr": "mpp_solar_pv2_input_current{cmd!~\"QPIGS|QPIGS2\",instance=\"$node\", job=\"$job\"} * mpp_solar_pv2_input_voltage{cmd!~\"QPIGS|QPIGS2\",instance=\"$node\", job=\"$job\"}",
             "hide": false,
             "legendFormat": "{{inverter}}  PV2",
             "range": true,
@@ -3533,7 +3750,7 @@
               "uid": "WIyb0ajVk"
             },
             "editorMode": "code",
-            "expr": "mpp_solar_pv3_input_current{cmd!~\"QPIGS|QPIGS2\"} * mpp_solar_pv3_input_voltage{cmd!~\"QPIGS|QPIGS2\"}",
+            "expr": "mpp_solar_pv3_input_current{cmd!~\"QPIGS|QPIGS2\",instance=\"$node\", job=\"$job\"} * mpp_solar_pv3_input_voltage{cmd!~\"QPIGS|QPIGS2\",instance=\"$node\", job=\"$job\"}",
             "hide": false,
             "legendFormat": "{{inverter}}  PV3",
             "range": true,
@@ -3545,7 +3762,7 @@
               "uid": "WIyb0ajVk"
             },
             "editorMode": "code",
-            "expr": "mpp_solar_pv1_input_current{cmd!~\"QPIGS|QPIGS2\"} * mpp_solar_pv1_input_voltage{cmd!~\"QPIGS|QPIGS2\"} offset 24h",
+            "expr": "mpp_solar_pv1_input_current{cmd!~\"QPIGS|QPIGS2\",instance=\"$node\", job=\"$job\"} * mpp_solar_pv1_input_voltage{cmd!~\"QPIGS|QPIGS2\",instance=\"$node\", job=\"$job\"} offset 24h",
             "hide": false,
             "legendFormat": "{{inverter}} PV1 Yesterday",
             "range": true,
@@ -3557,7 +3774,7 @@
               "uid": "WIyb0ajVk"
             },
             "editorMode": "code",
-            "expr": "mpp_solar_pv2_input_current{cmd!~\"QPIGS|QPIGS2\"} * mpp_solar_pv2_input_voltage{cmd!~\"QPIGS|QPIGS2\"} offset 24h",
+            "expr": "mpp_solar_pv2_input_current{cmd!~\"QPIGS|QPIGS2\",instance=\"$node\", job=\"$job\"} * mpp_solar_pv2_input_voltage{cmd!~\"QPIGS|QPIGS2\",instance=\"$node\", job=\"$job\"} offset 24h",
             "hide": false,
             "legendFormat": "{{inverter}}  PV2 Yesterday",
             "range": true,
@@ -3569,7 +3786,7 @@
               "uid": "WIyb0ajVk"
             },
             "editorMode": "code",
-            "expr": "mpp_solar_pv3_input_current{cmd!~\"QPIGS|QPIGS2\"} * mpp_solar_pv3_input_voltage{cmd!~\"QPIGS|QPIGS2\"} offset 24h",
+            "expr": "mpp_solar_pv3_input_current{cmd!~\"QPIGS|QPIGS2\",instance=\"$node\", job=\"$job\"} * mpp_solar_pv3_input_voltage{cmd!~\"QPIGS|QPIGS2\",instance=\"$node\", job=\"$job\"} offset 24h",
             "hide": false,
             "legendFormat": "{{inverter}}  PV3 Yesterday",
             "range": true,
@@ -3661,7 +3878,7 @@
   "liveNow": false,
   "panels": [
     {
-      "collapsed": false,
+      "collapsed": true,
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -3669,22 +3886,24 @@
         "y": 0
       },
       "id": 45,
-      "panels": [],
+      "panels": [
+        {
+          "gridPos": {
+            "h": 32,
+            "w": 24,
+            "x": 0,
+            "y": 1
+          },
+          "id": 75,
+          "libraryPanel": {
+            "name": "Solar Config",
+            "uid": "a179b231-2e29-445c-a6a7-5f0f04533bf3"
+          },
+          "title": "Solar Config"
+        }
+      ],
       "title": "About configuration",
       "type": "row"
-    },
-    {
-      "gridPos": {
-        "h": 32,
-        "w": 24,
-        "x": 0,
-        "y": 1
-      },
-      "id": 75,
-      "libraryPanel": {
-        "uid": "a179b231-2e29-445c-a6a7-5f0f04533bf3",
-        "name": "Solar Config"
-      }
     },
     {
       "collapsed": false,
@@ -3692,7 +3911,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 33
+        "y": 1
       },
       "id": 50,
       "panels": [],
@@ -3704,7 +3923,7 @@
         "h": 4,
         "w": 4,
         "x": 0,
-        "y": 34
+        "y": 2
       },
       "id": 8,
       "libraryPanel": {
@@ -3717,7 +3936,7 @@
         "h": 4,
         "w": 3,
         "x": 4,
-        "y": 34
+        "y": 2
       },
       "id": 4,
       "libraryPanel": {
@@ -3730,7 +3949,7 @@
         "h": 4,
         "w": 4,
         "x": 7,
-        "y": 34
+        "y": 2
       },
       "id": 2,
       "libraryPanel": {
@@ -3743,7 +3962,7 @@
         "h": 4,
         "w": 4,
         "x": 11,
-        "y": 34
+        "y": 2
       },
       "id": 6,
       "libraryPanel": {
@@ -3756,7 +3975,7 @@
         "h": 4,
         "w": 4,
         "x": 15,
-        "y": 34
+        "y": 2
       },
       "id": 14,
       "libraryPanel": {
@@ -3769,7 +3988,7 @@
         "h": 4,
         "w": 5,
         "x": 19,
-        "y": 34
+        "y": 2
       },
       "id": 12,
       "libraryPanel": {
@@ -3782,7 +4001,7 @@
         "h": 5,
         "w": 3,
         "x": 0,
-        "y": 38
+        "y": 6
       },
       "id": 10,
       "libraryPanel": {
@@ -3795,7 +4014,7 @@
         "h": 5,
         "w": 3,
         "x": 3,
-        "y": 38
+        "y": 6
       },
       "id": 16,
       "libraryPanel": {
@@ -3808,7 +4027,7 @@
         "h": 5,
         "w": 3,
         "x": 6,
-        "y": 38
+        "y": 6
       },
       "id": 18,
       "libraryPanel": {
@@ -3821,7 +4040,7 @@
         "h": 5,
         "w": 3,
         "x": 9,
-        "y": 38
+        "y": 6
       },
       "id": 20,
       "libraryPanel": {
@@ -3834,7 +4053,7 @@
         "h": 13,
         "w": 6,
         "x": 12,
-        "y": 38
+        "y": 6
       },
       "id": 67,
       "libraryPanel": {
@@ -3847,7 +4066,7 @@
         "h": 13,
         "w": 6,
         "x": 18,
-        "y": 38
+        "y": 6
       },
       "id": 40,
       "libraryPanel": {
@@ -3860,7 +4079,7 @@
         "h": 8,
         "w": 6,
         "x": 0,
-        "y": 43
+        "y": 11
       },
       "id": 36,
       "libraryPanel": {
@@ -3873,7 +4092,7 @@
         "h": 8,
         "w": 6,
         "x": 6,
-        "y": 43
+        "y": 11
       },
       "id": 65,
       "libraryPanel": {
@@ -3886,7 +4105,7 @@
         "h": 8,
         "w": 5,
         "x": 0,
-        "y": 51
+        "y": 19
       },
       "id": 48,
       "libraryPanel": {
@@ -3899,7 +4118,7 @@
         "h": 8,
         "w": 3,
         "x": 5,
-        "y": 51
+        "y": 19
       },
       "id": 22,
       "libraryPanel": {
@@ -3912,7 +4131,7 @@
         "h": 8,
         "w": 4,
         "x": 8,
-        "y": 51
+        "y": 19
       },
       "id": 24,
       "libraryPanel": {
@@ -3925,7 +4144,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 51
+        "y": 19
       },
       "id": 42,
       "libraryPanel": {
@@ -3939,7 +4158,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 59
+        "y": 27
       },
       "id": 47,
       "panels": [],
@@ -3951,7 +4170,7 @@
         "h": 11,
         "w": 12,
         "x": 0,
-        "y": 60
+        "y": 28
       },
       "id": 56,
       "libraryPanel": {
@@ -3964,7 +4183,7 @@
         "h": 11,
         "w": 12,
         "x": 12,
-        "y": 60
+        "y": 28
       },
       "id": 71,
       "libraryPanel": {
@@ -3977,7 +4196,7 @@
         "h": 11,
         "w": 12,
         "x": 0,
-        "y": 71
+        "y": 39
       },
       "id": 32,
       "libraryPanel": {
@@ -3990,7 +4209,7 @@
         "h": 11,
         "w": 12,
         "x": 12,
-        "y": 71
+        "y": 39
       },
       "id": 30,
       "libraryPanel": {
@@ -4003,7 +4222,7 @@
         "h": 11,
         "w": 12,
         "x": 0,
-        "y": 82
+        "y": 50
       },
       "id": 28,
       "libraryPanel": {
@@ -4016,7 +4235,7 @@
         "h": 11,
         "w": 12,
         "x": 12,
-        "y": 82
+        "y": 50
       },
       "id": 73,
       "libraryPanel": {
@@ -4029,7 +4248,7 @@
         "h": 12,
         "w": 24,
         "x": 0,
-        "y": 93
+        "y": 61
       },
       "id": 69,
       "libraryPanel": {
@@ -4042,7 +4261,7 @@
         "h": 15,
         "w": 24,
         "x": 0,
-        "y": 105
+        "y": 73
       },
       "id": 34,
       "libraryPanel": {
@@ -4056,7 +4275,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 120
+        "y": 88
       },
       "id": 52,
       "panels": [],
@@ -4068,7 +4287,7 @@
         "h": 13,
         "w": 12,
         "x": 0,
-        "y": 121
+        "y": 89
       },
       "id": 58,
       "libraryPanel": {
@@ -4081,7 +4300,7 @@
         "h": 13,
         "w": 12,
         "x": 12,
-        "y": 121
+        "y": 89
       },
       "id": 59,
       "libraryPanel": {
@@ -4094,7 +4313,7 @@
         "h": 20,
         "w": 24,
         "x": 0,
-        "y": 134
+        "y": 102
       },
       "id": 43,
       "libraryPanel": {
@@ -4173,17 +4392,76 @@
         "skipUrlSync": false,
         "sort": 1,
         "type": "query"
+      },
+      {
+        "hide": 2,
+        "label": "ac_output_active_power",
+        "name": "ac_output_active_power",
+        "query": "${VAR_AC_OUTPUT_ACTIVE_POWER}",
+        "skipUrlSync": false,
+        "type": "constant",
+        "current": {
+          "value": "${VAR_AC_OUTPUT_ACTIVE_POWER}",
+          "text": "${VAR_AC_OUTPUT_ACTIVE_POWER}",
+          "selected": false
+        },
+        "options": [
+          {
+            "value": "${VAR_AC_OUTPUT_ACTIVE_POWER}",
+            "text": "${VAR_AC_OUTPUT_ACTIVE_POWER}",
+            "selected": false
+          }
+        ]
+      },
+      {
+        "description": "Maximum supported pv input wattage on each input on controller..",
+        "hide": 2,
+        "name": "max_pv_input_power",
+        "query": "${VAR_MAX_PV_INPUT_POWER}",
+        "skipUrlSync": false,
+        "type": "constant",
+        "current": {
+          "value": "${VAR_MAX_PV_INPUT_POWER}",
+          "text": "${VAR_MAX_PV_INPUT_POWER}",
+          "selected": false
+        },
+        "options": [
+          {
+            "value": "${VAR_MAX_PV_INPUT_POWER}",
+            "text": "${VAR_MAX_PV_INPUT_POWER}",
+            "selected": false
+          }
+        ]
+      },
+      {
+        "hide": 2,
+        "name": "battery_voltage_max_rating",
+        "query": "${VAR_BATTERY_VOLTAGE_MAX_RATING}",
+        "skipUrlSync": false,
+        "type": "constant",
+        "current": {
+          "value": "${VAR_BATTERY_VOLTAGE_MAX_RATING}",
+          "text": "${VAR_BATTERY_VOLTAGE_MAX_RATING}",
+          "selected": false
+        },
+        "options": [
+          {
+            "value": "${VAR_BATTERY_VOLTAGE_MAX_RATING}",
+            "text": "${VAR_BATTERY_VOLTAGE_MAX_RATING}",
+            "selected": false
+          }
+        ]
       }
     ]
   },
   "time": {
-    "from": "now-24h",
+    "from": "now-6h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "mpp_solar",
   "uid": "EOSZe9jVz",
-  "version": 191,
+  "version": 199,
   "weekStart": ""
 }
